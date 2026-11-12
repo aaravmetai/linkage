@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Linkage</title>
+<meta name="description" content="A free daily MCAT puzzle. Find four groups of four terms before you run out of mistakes.">
+<meta property="og:title" content="Linkage">
+<meta property="og:description" content="The daily MCAT grouping puzzle. A new one every midnight.">
+<meta property="og:url" content="https://playlinkage.com">
+<meta name="theme-color" content="#f3f4f1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='2' y='2' width='28' height='28' rx='7' fill='%23f1cf63'/%3E%3Crect x='34' y='2' width='28' height='28' rx='7' fill='%239cc58a'/%3E%3Crect x='2' y='34' width='28' height='28' rx='7' fill='%2393b8de'/%3E%3Crect x='34' y='34' width='28' height='28' rx='7' fill='%23bc9ad8'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
@@ -442,7 +448,7 @@ if(FIREBASE_CONFIG){
     };
     renderAcctBtn();
     Au.onAuthStateChanged(auth,async user=>{
-      if(!user){cloud=null;render();if($("acctSheet").classList.contains("on"))renderAcct();return}
+      if(!user){cloud=null;if(!practice&&S.status==="playing"&&S.mistakes>=S.max)outOfMistakes();render();if($("acctSheet").classList.contains("on"))renderAcct();return}
       const uRef=F.doc(db,"users",user.uid), rRef=F.doc(db,"referrals",user.uid);
       let credits=0, refPending=false;
       const snap=await F.getDoc(uRef);
@@ -481,5 +487,6 @@ if(FIREBASE_CONFIG){
   }).catch(()=>{});
 }
 </script>
+<script data-goatcounter="https://playlinkage.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
