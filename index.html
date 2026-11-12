@@ -467,7 +467,7 @@ if(FIREBASE_CONFIG){
       try{const r=await F.getDoc(rRef);refPending=r.exists()&&!r.data().played}catch(e){}
       // merge: keep whichever copy of each day is further along
       const remote=(snap.exists()&&snap.data().days)||{};
-      const rank=d=>d?(d.status!=="playing"?1000:0)+(d.history||[]).length:-1;
+      const rank=d=>d?(d.status==="won"?2000:d.status==="lost"?1000:0)+(d.history||[]).length:-1;
       const merged={...remote};
       for(const k in days)if(rank(days[k])>rank(remote[k]))merged[k]=days[k];
       days=merged; store.set("linkage-days",days);
