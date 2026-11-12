@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linkage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Lab-notebook calm: cool paper, ink navy, one stamp-red accent. Board centered, controls below. */
+  --paper:#f3f4f1; --card:#e4e6e0; --ink:#17202b; --muted:#5d6672; --line:#c9cdc5; --accent:#c8402f;
+  --g0:#f1cf63; --g1:#9cc58a; --g2:#93b8de; --g3:#bc9ad8;
+  --sel:#2b3644; --selink:#f3f4f1;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#12171d; --card:#222a33; --ink:#e9ece6; --muted:#98a2ad; --line:#323c47; --accent:#ec6a55;
+    --g0:#d9b84c; --g1:#7fae6d; --g2:#6f9cc9; --g3:#9e7cc0; --sel:#e9ece6; --selink:#12171d; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12171d; --card:#222a33; --ink:#e9ece6; --muted:#98a2ad; --line:#323c47; --accent:#ec6a55;
+  --g0:#d9b84c; --g1:#7fae6d; --g2:#6f9cc9; --g3:#9e7cc0; --sel:#e9ece6; --selink:#12171d; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:540px;margin:0 auto;padding:16px 16px 40px;display:flex;flex-direction:column;gap:14px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+.brand h1{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.03em;margin:0;line-height:1}
+.brand h1 span{color:var(--accent)}
+.brand p{margin:4px 0 0;font-size:13px;color:var(--muted)}
+.meta{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right;line-height:1.5}
+.icons{display:flex;gap:6px}
+.iconbtn{background:none;border:1.5px solid var(--line);color:var(--ink);border-radius:999px;height:34px;min-width:34px;padding:0 10px;font:600 13px var(--body);cursor:pointer}
+.iconbtn:hover{border-color:var(--ink)}
+.prompt{font-size:14px;color:var(--muted);text-align:center;margin:0}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tile{aspect-ratio:1/0.82;border:none;border-radius:10px;background:var(--card);color:var(--ink);font:600 clamp(11px,3.3vw,15px)/1.15 var(--body);padding:4px;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;overflow-wrap:anywhere;hyphens:auto;transition:transform .12s,background .12s;user-select:none;-webkit-user-select:none}
+.tile.long{font-size:clamp(9.5px,2.65vw,13px)}
+.tile:active{transform:scale(.96)}
+.tile.sel{background:var(--sel);color:var(--selink)}
+.tile:focus-visible,.btn:focus-visible,.iconbtn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.solved{grid-column:1/-1;border-radius:10px;padding:10px 12px;text-align:center;color:#17202b;animation:pop .35s ease-out}
+.solved .name{font-family:var(--display);font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.02em}
+.solved .items{font-size:14px;margin-top:2px}
+.solved .why{font-size:12.5px;margin-top:6px;line-height:1.4;opacity:.85;max-width:60ch;margin-inline:auto}
+@keyframes pop{from{transform:scale(.97);opacity:.4}to{transform:none;opacity:1}}
+.lv0{background:var(--g0)}.lv1{background:var(--g1)}.lv2{background:var(--g2)}.lv3{background:var(--g3)}
+.mist{display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;color:var(--muted)}
+.dots{display:flex;gap:6px}.dot{width:12px;height:12px;border-radius:50%;background:var(--ink);transition:opacity .2s}.dot.gone{opacity:.15}
+.controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.btn{border:1.5px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:11px 18px;font:600 14px var(--body);cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn:disabled{opacity:.35;cursor:default}
+.toast{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:8px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.toast.on{opacity:1}
+.result{border:1.5px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center}
+.result h2{font-family:var(--display);font-weight:800;margin:0;font-size:24px;text-wrap:balance}
+.grid{font-size:22px;line-height:1.15;letter-spacing:2px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+.stat b{display:block;font-family:var(--mono);font-size:22px;font-variant-numeric:tabular-nums}
+.stat span{font-size:11px;color:var(--muted)}
+.sheet{position:fixed;inset:0;background:rgba(10,14,18,.5);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.sheet.on{display:flex}
+.panel{background:var(--paper);color:var(--ink);width:100%;max-width:540px;border-radius:16px 16px 0 0;padding:20px 18px 28px;max-height:85%;overflow:auto}
+.panel h3{font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 10px}
+.panel p,.panel li{font-size:14.5px;line-height:1.5}
+.panel ul{padding-left:18px}
+.legend{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.legend div{display:flex;gap:8px;align-items:center;font-size:14px}
+.legend i{width:18px;height:18px;border-radius:5px;display:inline-block}
+.arch{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.arch button{padding:12px 6px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:600 14px var(--body);cursor:pointer}
+.arch button small{display:block;font-weight:400;font-size:11px;color:var(--muted);margin-top:2px}
+.practice{background:var(--accent);color:#fff;font:600 12px var(--body);padding:6px 10px;border-radius:8px;text-align:center;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.acct-link{font-family:var(--mono);font-size:12px;background:var(--card);padding:10px;border-radius:8px;overflow-wrap:anywhere;margin:8px 0}
+.practice button{background:none;border:1px solid #fff;color:#fff;border-radius:999px;padding:3px 10px;font:600 12px var(--body);cursor:pointer}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>Link<span>age</span></h1>
+      <p>The daily MCAT grouping puzzle</p>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+      <div class="icons">
+        <button class="iconbtn" id="helpBtn" aria-label="How to play">?</button>
+        <button class="iconbtn" id="archBtn">Past</button>
+        <button class="iconbtn" id="statsBtn">Stats</button>
+        <button class="iconbtn" id="acctBtn" hidden>Sign in</button>
+      </div>
+      <div class="meta" id="meta"></div>
+    </div>
+  </header>
+  <div id="practice"></div>
+  <p class="prompt" id="prompt">Make four groups of four.</p>
+  <div class="board" id="board" role="group" aria-label="Puzzle tiles"></div>
+  <div class="mist" id="mist"><span>Mistakes left</span><div class="dots" id="dots"></div></div>
+  <div class="controls" id="controls">
+    <button class="btn" id="shuffle">Shuffle</button>
+    <button class="btn" id="clear">Deselect all</button>
+    <button class="btn primary" id="submit" disabled>Submit</button>
+  </div>
+  <div id="resultBox"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="sheet" id="helpSheet"><div class="panel">
+  <h3>How to play</h3>
+  <p>Find four groups of four MCAT terms that share something. Pick four tiles and hit Submit. You get four mistakes.</p>
+  <ul>
+    <li>Every puzzle mixes all sections: Bio/Biochem, Chem/Phys, and Psych/Soc.</li>
+    <li>Watch out. Some tiles look like an easy group but one of them belongs somewhere else.</li>
+    <li>Purple is usually wordplay, like a word that fills in a blank.</li>
+    <li>Each solved group shows a quick explanation so you actually learn something.</li>
+    <li>Sign in with Google to keep your streak on every device. Invite a friend and you both earn bonus tries.</li>
+  </ul>
+  <div class="legend">
+    <div><i class="lv0"></i>Straightforward</div>
+    <div><i class="lv1"></i>Medium</div>
+    <div><i class="lv2"></i>Hard</div>
+    <div><i class="lv3"></i>Tricky</div>
+  </div>
+  <p>A new puzzle drops every day at midnight.</p>
+  <button class="btn primary" data-close>Got it</button>
+</div></div>
+
+<div class="sheet" id="archSheet"><div class="panel">
+  <h3>Past puzzles</h3>
+  <p style="color:var(--muted);margin-top:0">Practice runs don't count toward your streak.</p>
+  <div class="arch" id="arch"></div>
+  <p><button class="btn" data-close>Close</button></p>
+</div></div>
+
+<div class="sheet" id="statsSheet"><div class="panel">
+  <h3>Your stats</h3>
+  <div class="stats" id="statsGrid"></div>
+  <p><button class="btn" data-close>Close</button></p>
+</div></div>
+
+<div class="sheet" id="acctSheet"><div class="panel" id="acctPanel"></div></div>
+
+<div class="sheet" id="bonusSheet"><div class="panel">
+  <h3>Out of mistakes</h3>
+  <p>You've got a bonus try from inviting a friend. Use it for one more mistake on today's puzzle?</p>
+  <div class="controls" style="justify-content:flex-start"><button class="btn primary" id="useBonus">Use bonus try</button><button class="btn" id="skipBonus">No, show answers</button></div>
+</div></div>
+
+<script type="module">
+const PUZZLES = [
+ {groups:[
+  {name:"Nonpolar amino acids",items:["Alanine","Valine","Leucine","Isoleucine"],why:"All have hydrophobic alkyl side chains. Glycine is nonpolar too, which is the trap."},
+  {name:"Neurotransmitters",items:["GABA","Glycine","Serotonin","Dopamine"],why:"Glycine doubles as an inhibitory neurotransmitter, mainly in the spinal cord and brainstem."},
+  {name:"Defense mechanisms",items:["Projection","Sublimation","Displacement","Regression"],why:"Freudian defenses. Sublimation sounds like a phase change and displacement sounds like physics."},
+  {name:"___ potential",items:["Action","Resting","Graded","Reduction"],why:"Action, resting, and graded potentials are neuro. Reduction potential is electrochem."}
+ ]},
+ {groups:[
+  {name:"Piaget's stages",items:["Sensorimotor","Preoperational","Concrete","Formal"],why:"Sensorimotor, preoperational, concrete operational, formal operational."},
+  {name:"Anterior pituitary hormones",items:["FSH","LH","ACTH","Prolactin"],why:"ADH is pituitary too, but it's released from the posterior pituitary."},
+  {name:"Hormones that act on the kidney",items:["ADH","Aldosterone","ANP","PTH"],why:"ADH adds aquaporins, aldosterone boosts Na+ reabsorption, ANP increases Na+ excretion, PTH increases Ca2+ reabsorption."},
+  {name:"Eponyms: ___ of ___",items:["Henle","His","Langerhans","Willis"],why:"Loop of Henle, bundle of His, islets of Langerhans, circle of Willis."}
+ ]},
+ {groups:[
+  {name:"Types of radioactive decay",items:["Alpha","Beta","Gamma","Positron"],why:"Alpha loses a He nucleus, beta minus emits an electron, positron emission is beta plus, gamma is just energy."},
+  {name:"SI base units",items:["Kelvin","Mole","Ampere","Candela"],why:"Four of the seven base units. The others are meter, kilogram, second."},
+  {name:"Derived SI units",items:["Joule","Newton","Watt","Pascal"],why:"Built from base units, like N = kg·m/s². All named after people, like the purple group."},
+  {name:"___ cycle",items:["Krebs","Calvin","Cori","Urea"],why:"Calvin, not Kelvin. Cori cycle moves lactate to the liver, urea cycle disposes of nitrogen."}
+ ]},
+ {groups:[
+  {name:"Attachment styles",items:["Secure","Avoidant","Ambivalent","Disorganized"],why:"From Ainsworth's Strange Situation studies."},
+  {name:"Sociological theories",items:["Functionalism","Conflict","Interactionism","Constructionism"],why:"Conflict theory, not an Erikson conflict."},
+  {name:"___ bias",items:["Confirmation","Hindsight","Optimism","Self-serving"],why:"Self-serving bias is crediting yourself for wins and blaming outside factors for losses."},
+  {name:"Erikson's good outcomes",items:["Trust","Industry","Identity","Integrity"],why:"Trust vs. mistrust, industry vs. inferiority, identity vs. role confusion, integrity vs. despair."}
+ ]},
+ {groups:[
+  {name:"Lipoproteins",items:["Chylomicron","VLDL","LDL","HDL"],why:"Chylomicrons carry dietary fat, HDL brings cholesterol back to the liver."},
+  {name:"Irreversible glycolysis enzymes",items:["Hexokinase","Glucokinase","PFK-1","Pyruvate kinase"],why:"Glucokinase is the liver version of hexokinase. PFK-1 is the rate-limiting step."},
+  {name:"Gluconeogenesis-only enzymes",items:["Pyruvate carboxylase","PEPCK","FBPase-1","G6Pase"],why:"These bypass the three irreversible glycolysis steps. Don't mix up pyruvate kinase and carboxylase."},
+  {name:"Fat-soluble vitamins",items:["A","D","E","K"],why:"Stored in fat, so they can build up to toxic levels. B and C are water-soluble."}
+ ]},
+ {groups:[
+  {name:"Wave properties",items:["Amplitude","Frequency","Wavelength","Period"],why:"v = fλ and T = 1/f."},
+  {name:"Fluid principles by name",items:["Bernoulli","Pascal","Archimedes","Poiseuille"],why:"Doppler is a physicist name too, but the Doppler effect isn't about fluids."},
+  {name:"Parts of the nephron",items:["Glomerulus","Bowman's capsule","Proximal tubule","Collecting duct"],why:"Filtration starts at the glomerulus. Most reabsorption happens in the proximal tubule."},
+  {name:"___ shift",items:["Doppler","Chloride","Red","Phase"],why:"Chloride shift swaps HCO3- for Cl- across RBCs. Red shift is the Doppler effect for receding light."}
+ ]},
+ {groups:[
+  {name:"Antibody isotypes",items:["IgA","IgD","IgE","IgG"],why:"IgG crosses the placenta, IgA is in secretions, IgE handles allergies and parasites. IgM is the one missing."},
+  {name:"DNA repair pathways",items:["Mismatch","Base excision","Nucleotide excision","End joining"],why:"Nucleotide excision fixes thymine dimers. Nonhomologous end joining patches double-strand breaks."},
+  {name:"Non-Mendelian inheritance",items:["Codominance","Incomplete dominance","Epistasis","Pleiotropy"],why:"Epistasis is one gene masking another. Pleiotropy is one gene affecting many traits."},
+  {name:"___ blot",items:["Southern","Northern","Western","Eastern"],why:"Southern detects DNA, Northern RNA, Western protein, Eastern post-translational modifications."}
+ ]}
+];
+
+// ===== Firebase: paste your config object here to turn on Google sign-in, sync and invites =====
+const FIREBASE_CONFIG = null;
+// =============================================================================================
+
+const EPOCH = new Date(2026,10,12); // puzzle #1 = Nov 12, 2026
+const SQ = ["🟨","🟩","🟦","🟪"];
+const $ = id => document.getElementById(id);
+const store = {
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+function dayNumOf(date){const t=new Date(date.getFullYear(),date.getMonth(),date.getDate());return Math.round((t-EPOCH)/86400000)+1}
+function todayNum(){return Math.max(1,dayNumOf(new Date()))}
+function dateOf(n){const d=new Date(EPOCH);d.setDate(d.getDate()+n-1);return d}
+function fmtDate(n,opts={month:"short",day:"numeric",year:"numeric"}){return dateOf(n).toLocaleDateString("en-US",opts)}
+function seeded(seed){return()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646}}
+function shuffle(arr,rnd=Math.random){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+// ---- Day records. Key "12" = live play of puzzle 12, key "x12" = practice play.
+let days = store.get("linkage-days",{});
+// migrate v1 saves
+(function(){for(let n=1;n<=todayNum();n++){const o=store.get("linkage-p-"+n,null);if(o&&!days[n]){o.max=4;o.history=(o.history||[]).map(r=>Array.isArray(r)?r.join(""):r);if(o.status!=="playing")o.finishedDay=n;days[n]=o}}store.set("linkage-days",days)})();
+
+// ---- Streaks and stats are derived from the records every time, never stored as counters.
+// A puzzle counts only if it was finished on its own day (finishedDay === puzzle number).
+function computeStats(days,today){
+  const live=n=>{const d=days[n];return d&&d.status!=="playing"&&d.finishedDay===n?d:null};
+  const won=n=>{const d=live(n);return!!d&&d.status==="won"};
+  let played=0,wins=0,max=0,run=0;
+  for(let n=1;n<=today;n++){
+    const d=live(n);
+    if(d){played++;if(d.status==="won")wins++}
+    if(won(n)){run++;max=Math.max(max,run)}else run=0;
+  }
+  let streak=0,n=today;
+  if(!won(today)){ if(live(today))return{played,wins,streak:0,max}; n=today-1 } // today not played yet keeps streak alive
+  while(n>=1&&won(n)){streak++;n--}
+  return{played,wins,streak,max};
+}
+
+const TODAY = todayNum();
+let num, key, puzzle, S, practice=false, selected=new Set();
+let cloud=null; // set when signed in
+
+function blank(n){
+  const all=puzzle.groups.flatMap(g=>g.items);
+  return{order:shuffle(all,seeded(n*7919)),solved:[],mistakes:0,max:4,history:[],tried:[],status:"playing",bonusUsed:false};
+}
+function load(n,isPractice){
+  if(n>TODAY)n=TODAY;
+  num=n; practice=isPractice||n!==TODAY; key=(practice?"x":"")+n; selected=new Set();
+  puzzle=PUZZLES[(n-1)%PUZZLES.length];
+  S=days[key]||blank(n);
+  render();
+  if(!practice&&S.status==="playing"&&S.mistakes>=S.max&&(cloud||!FIREBASE_CONFIG))outOfMistakes();
+}
+function outOfMistakes(){
+  if(!practice&&!S.bonusUsed&&cloud&&cloud.credits()>0){save();renderDots();openSheet("bonusSheet");return}
+  selected.clear(); finish("lost"); save(); render();
+}
+function save(){days[key]=S;store.set("linkage-days",days);if(cloud)cloud.saveDay(key,S)}
+function groupOf(item){return puzzle.groups.findIndex(g=>g.items.includes(item))}
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function render(){
+  $("meta").textContent="#"+num+", "+fmtDate(num,{month:"short",day:"numeric"});
+  $("practice").innerHTML=practice?'<div class="practice"><span>Practice: puzzle #'+num+'</span><button id="backToday">Back to today</button></div>':"";
+  if(practice)$("backToday").onclick=()=>load(TODAY,false);
+  const b=$("board"); b.innerHTML="";
+  S.solved.forEach(gi=>b.appendChild(solvedRow(gi)));
+  if(S.status!=="playing"){
+    puzzle.groups.forEach((g,gi)=>{if(!S.solved.includes(gi))b.appendChild(solvedRow(gi))});
+  } else {
+    S.order.filter(t=>!S.solved.includes(groupOf(t))).forEach(t=>{
+      const el=document.createElement("button");
+      el.className="tile"+(t.length>11?" long":"")+(selected.has(t)?" sel":"");
+      el.textContent=t; el.setAttribute("aria-pressed",selected.has(t));
+      el.onclick=()=>toggle(t);
+      b.appendChild(el);
+    });
+  }
+  renderDots();
+  const playing=S.status==="playing";
+  $("controls").style.display=playing?"flex":"none";
+  $("mist").style.display=playing?"flex":"none";
+  $("prompt").style.display=playing?"block":"none";
+  $("submit").disabled=selected.size!==4;
+  $("clear").disabled=selected.size===0;
+  renderResult(); renderAcctBtn();
+}
+function renderDots(){
+  const left=S.max-S.mistakes;
+  $("dots").innerHTML=Array.from({length:S.max},(_,i)=>'<span class="dot'+(i>=left?" gone":"")+'"></span>').join("");
+}
+function solvedRow(gi){
+  const g=puzzle.groups[gi]; const d=document.createElement("div");
+  d.className="solved lv"+gi;
+  d.innerHTML='<div class="name">'+esc(g.name)+'</div><div class="items">'+esc(g.items.join(", "))+'</div><div class="why">'+esc(g.why)+'</div>';
+  return d;
+}
+function toggle(t){if(selected.has(t))selected.delete(t);else if(selected.size<4)selected.add(t);render()}
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("on"),1800)}
+
+function submit(){
+  if(S.status!=="playing")return;
+  if(S.mistakes>=S.max){outOfMistakes();return}
+  const pick=[...selected]; const k=pick.slice().sort().join("|");
+  if(S.tried.includes(k)){toast("Already guessed");return}
+  S.tried.push(k);
+  const gs=pick.map(groupOf); S.history.push(gs.join(""));
+  const counts={}; gs.forEach(g=>counts[g]=(counts[g]||0)+1);
+  const best=Math.max(...Object.values(counts));
+  if(best===4){
+    S.solved.push(gs[0]); selected.clear();
+    if(S.solved.length===4)finish("won");
+    save(); render(); return;
+  }
+  S.mistakes++;
+  toast(best===3?"One away...":"Not quite");
+  document.querySelectorAll(".tile.sel").forEach(e=>{e.classList.remove("shake");void e.offsetWidth;e.classList.add("shake")});
+  if(S.mistakes>=S.max){outOfMistakes();return}
+  save(); renderDots();
+}
+function finish(status){
+  S.status=status; S.finishedDay=todayNum();
+  if(!practice&&cloud)cloud.markReferralPlayed();
+}
+$("useBonus").onclick=()=>{S.max=5;S.bonusUsed=true;save();closeSheets();render();toast("Bonus try used. One more shot")};
+$("skipBonus").onclick=()=>{closeSheets();selected.clear();finish("lost");save();render()};
+
+function shareText(){
+  return "Linkage 🧠 "+fmtDate(num)+"\nPuzzle #"+num+(practice?" (practice)":"")+"\n"+S.history.map(r=>[...r].map(g=>SQ[g]).join("")).join("\n");
+}
+function renderResult(){
+  const box=$("resultBox");
+  if(S.status==="playing"){box.innerHTML="";return}
+  const won=S.status==="won";
+  const head=won?(S.mistakes===0?"Perfect. Zero mistakes.":"Solved it."):"Tough one. Here's the answer key.";
+  const st=computeStats(days,TODAY);
+  box.innerHTML='<div class="result"><h2>'+head+'</h2><div class="grid">'+S.history.map(r=>[...r].map(g=>SQ[g]).join("")).join("<br>")+'</div>'+
+   (practice?'':'<div class="stats">'+statTiles(st)+'</div>')+
+   '<div class="controls"><button class="btn primary" id="copyBtn">Copy results</button>'+
+   (cloud&&!practice?'<button class="btn" id="inviteBtn">Invite a friend</button>':'')+'</div>'+
+   '<p style="margin:0;font-size:13px;color:var(--muted)">'+(practice?"Practice run, doesn't count toward your streak.":"Next puzzle at midnight.")+'</p></div>';
+  $("copyBtn").onclick=copyShare;
+  if($("inviteBtn"))$("inviteBtn").onclick=()=>openSheet("acctSheet");
+}
+function statTiles(st){
+  const pct=st.played?Math.round(st.wins/st.played*100):0;
+  return[[st.played,"Played"],[pct+"%","Win rate"],[st.streak,"Streak"],[st.max,"Best streak"]]
+   .map(([v,l])=>'<div class="stat"><b>'+v+'</b><span>'+l+'</span></div>').join("");
+}
+async function copyText(txt,okMsg){
+  try{await navigator.clipboard.writeText(txt);toast(okMsg)}
+  catch(e){
+    const ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();
+    let ok=false;try{ok=document.execCommand("copy")}catch(_){}
+    ta.remove();toast(ok?okMsg:"Couldn't copy here, screenshot it instead");
+  }
+}
+function copyShare(){copyText(shareText()+(cloud?"\n"+cloud.inviteLink():"\n"+location.origin+location.pathname),"Copied. Paste it in the group chat")}
+
+function renderAcctBtn(){
+  const b=$("acctBtn");
+  if(!FIREBASE_CONFIG){b.hidden=true;return}
+  b.hidden=false; b.textContent=cloud?(cloud.name()||"Me").split(" ")[0]:"Sign in";
+}
+function openSheet(id){
+  if(id==="statsSheet")$("statsGrid").innerHTML=statTiles(computeStats(days,TODAY));
+  if(id==="archSheet"){
+    let h="";
+    for(let n=TODAY;n>=1;n--){
+      const p=n===TODAY?days[n]:(days[n]||days["x"+n]);
+      const tag=n===TODAY?"Today":(p&&p.status!=="playing"?(p.status==="won"?"Solved":"Missed"):"Play");
+      h+='<button data-n="'+n+'">#'+n+'<small>'+fmtDate(n,{month:"short",day:"numeric"})+' · '+tag+'</small></button>';
+    }
+    $("arch").innerHTML=h;
+    $("arch").querySelectorAll("button").forEach(btn=>btn.onclick=()=>{const n=+btn.dataset.n;closeSheets();load(n,n!==TODAY)});
+  }
+  if(id==="acctSheet")renderAcct();
+  $(id).classList.add("on");
+}
+function renderAcct(){
+  const p=$("acctPanel");
+  if(!cloud){
+    p.innerHTML='<h3>Save your streak</h3><p>Sign in with Google to keep your streak and stats on every device. Your progress on this device comes with you.</p><p>Once you\'re in, invite friends. Every friend who signs up and plays a daily puzzle earns you a bonus try.</p><div class="controls" style="justify-content:flex-start"><button class="btn primary" id="gBtn">Sign in with Google</button><button class="btn" data-close>Not now</button></div>';
+    $("gBtn").onclick=()=>signIn();
+  } else {
+    p.innerHTML='<h3>'+esc(cloud.name()||"Your account")+'</h3><p style="margin-top:0;color:var(--muted)">'+esc(cloud.email()||"")+'</p>'+
+    '<p><b>Bonus tries available: '+cloud.credits()+'</b><br>Each friend who signs up from your link and finishes a daily puzzle gives you one. A bonus try gives you a 5th mistake on a daily puzzle.</p>'+
+    '<div class="acct-link">'+esc(cloud.inviteLink())+'</div>'+
+    '<div class="controls" style="justify-content:flex-start"><button class="btn primary" id="copyInvite">Copy invite link</button><button class="btn" id="outBtn">Sign out</button><button class="btn" data-close>Close</button></div>';
+    $("copyInvite").onclick=()=>copyText("I've been doing this daily MCAT puzzle, try it: "+cloud.inviteLink(),"Invite link copied");
+    $("outBtn").onclick=()=>cloud.signOut();
+  }
+}
+function closeSheets(){document.querySelectorAll(".sheet").forEach(s=>s.classList.remove("on"))}
+document.querySelectorAll(".sheet").forEach(s=>s.addEventListener("click",e=>{
+  if(s.id==="bonusSheet")return; // must choose
+  if(e.target===s||e.target.hasAttribute("data-close"))closeSheets()}));
+$("helpBtn").onclick=()=>openSheet("helpSheet");
+$("archBtn").onclick=()=>openSheet("archSheet");
+$("statsBtn").onclick=()=>openSheet("statsSheet");
+$("acctBtn").onclick=()=>openSheet("acctSheet");
+$("shuffle").onclick=()=>{S.order=shuffle(S.order);save();render()};
+$("clear").onclick=()=>{selected.clear();render()};
+$("submit").onclick=submit;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("bonusSheet").classList.contains("on"))closeSheets()});
+// roll over to the new puzzle if the tab stays open past midnight
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&todayNum()!==TODAY)location.reload()});
+
+// remember who invited this visitor
+try{const r=new URLSearchParams(location.search).get("ref");if(r&&/^[A-Za-z0-9]{10,40}$/.test(r))store.set("linkage-ref",r)}catch(e){}
+
+load(TODAY,false);
+if(!store.get("linkage-seen",false)){store.set("linkage-seen",true);openSheet("helpSheet")}
+
+// ================= Cloud: Google sign-in, sync, referrals =================
+let signIn=()=>toast("Sign-in isn't set up yet");
+if(FIREBASE_CONFIG){
+  const V="10.12.2", base="https://www.gstatic.com/firebasejs/"+V+"/";
+  Promise.all([import(base+"firebase-app.js"),import(base+"firebase-auth.js"),import(base+"firebase-firestore.js")])
+  .then(([A,Au,F])=>{
+    const app=A.initializeApp(FIREBASE_CONFIG), auth=Au.getAuth(app), db=F.getFirestore(app);
+    const provider=new Au.GoogleAuthProvider();
+    signIn=async()=>{
+      try{await Au.signInWithPopup(auth,provider)}
+      catch(e){if(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-environment")Au.signInWithRedirect(auth,provider);else if(e.code!=="auth/popup-closed-by-user")toast("Sign-in failed. Try again")}
+    };
+    renderAcctBtn();
+    Au.onAuthStateChanged(auth,async user=>{
+      if(!user){cloud=null;render();if($("acctSheet").classList.contains("on"))renderAcct();return}
+      const uRef=F.doc(db,"users",user.uid), rRef=F.doc(db,"referrals",user.uid);
+      let credits=0, refPending=false;
+      const snap=await F.getDoc(uRef);
+      // first sign-in: record who invited them
+      if(!snap.exists()){
+        const ref=store.get("linkage-ref",null);
+        if(ref&&ref!==user.uid){try{await F.setDoc(rRef,{ref,played:false,createdAt:F.serverTimestamp()})}catch(e){}}
+      }
+      try{const r=await F.getDoc(rRef);refPending=r.exists()&&!r.data().played}catch(e){}
+      // merge: keep whichever copy of each day is further along
+      const remote=(snap.exists()&&snap.data().days)||{};
+      const rank=d=>d?(d.status!=="playing"?1000:0)+(d.history||[]).length:-1;
+      const merged={...remote};
+      for(const k in days)if(rank(days[k])>rank(remote[k]))merged[k]=days[k];
+      days=merged; store.set("linkage-days",days);
+      await F.setDoc(uRef,{name:user.displayName||"",days,updatedAt:F.serverTimestamp()},{merge:true});
+      const usedBonus=()=>Object.values(days).filter(d=>d.bonusUsed).length;
+      async function refreshCredits(){
+        try{const q=F.query(F.collection(db,"referrals"),F.where("ref","==",user.uid),F.where("played","==",true));
+          credits=(await F.getCountFromServer(q)).data().count}catch(e){}
+      }
+      await refreshCredits();
+      cloud={
+        name:()=>user.displayName, email:()=>user.email,
+        credits:()=>Math.max(0,credits-usedBonus()),
+        inviteLink:()=>location.origin+location.pathname+"?ref="+user.uid,
+        saveDay:(k,d)=>F.setDoc(uRef,{days:{[k]:d},updatedAt:F.serverTimestamp()},{merge:true}).catch(()=>toast("Couldn't sync. Saved on this device")),
+        markReferralPlayed:()=>{if(refPending){refPending=false;F.updateDoc(rRef,{played:true}).catch(()=>{})}},
+        signOut:()=>{Au.signOut(auth);closeSheets()}
+      };
+      if(Object.keys(days).some(k=>k[0]!=="x"&&days[k].status!=="playing"&&days[k].finishedDay===+k))cloud.markReferralPlayed();
+      load(num,practice);
+      if($("acctSheet").classList.contains("on"))renderAcct();
+      setInterval(refreshCredits,5*60*1000);
+    });
+  }).catch(()=>{});
+}
+</script>
+</body>
+</html>

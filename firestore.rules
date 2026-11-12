@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Each player can only read and write their own progress
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // One referral record per new player, saying who invited them
+    match /referrals/{uid} {
+      // the inviter can count their referrals, the new player can read their own
+      allow read: if request.auth != null &&
+        (request.auth.uid == uid || resource.data.ref == request.auth.uid);
+
+      // created once by the new player, can't invite yourself, starts unplayed
+      allow create: if request.auth != null && request.auth.uid == uid &&
+        request.resource.data.ref is string &&
+        request.resource.data.ref != uid &&
+        request.resource.data.played == false &&
+        request.resource.data.keys().hasOnly(['ref', 'played', 'createdAt']);
+
+      // the new player can only flip played to true after finishing a daily puzzle
+      allow update: if request.auth != null && request.auth.uid == uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['played']) &&
+        request.resource.data.played == true;
+
+      allow delete: if false;
+    }
+  }
+}
