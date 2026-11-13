@@ -77,6 +77,9 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
 .toast{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:8px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
 .toast.on{opacity:1}
 .result{border:1.5px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center}
+.nudge{border:1.5px dashed var(--line);border-radius:10px;padding:12px 14px;width:100%;display:flex;flex-direction:column;gap:8px;align-items:center}
+.nudge p{margin:0;font-size:13.5px;color:var(--muted);text-align:center}
+.nudge .skip{background:none;border:none;color:var(--muted);font:500 12.5px var(--body);text-decoration:underline;cursor:pointer}
 .result h2{font-family:var(--display);font-weight:800;margin:0;font-size:24px;text-wrap:balance}
 .grid{font-size:22px;line-height:1.15;letter-spacing:2px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
@@ -367,9 +370,12 @@ function renderResult(){
    (practice?'':'<div class="stats">'+statTiles(st)+'</div>')+
    '<div class="controls"><button class="btn primary" id="copyBtn">Copy results</button>'+
    (cloud&&!practice?'<button class="btn" id="inviteBtn">Invite a friend</button>':'')+'</div>'+
-   '<p style="margin:0;font-size:13px;color:var(--muted)">'+(practice?"Practice run, doesn't count toward your streak.":"Next puzzle at midnight.")+'</p></div>';
+   '<p style="margin:0;font-size:13px;color:var(--muted)">'+(practice?"Practice run, doesn't count toward your streak.":"Next puzzle at midnight.")+'</p>'+
+   (!practice&&FIREBASE_CONFIG&&!cloud&&!store.get("linkage-nudged",false)?'<div class="nudge"><p>'+(won?"That streak only lives in this browser right now.":"Tomorrow is a fresh start.")+' Sign in and your streak and stats follow you on every device.</p><button class="btn primary" id="nudgeIn">Sign in with Google</button><button class="skip" id="nudgeSkip">not now</button></div>':'')+
+   '</div>';
   $("copyBtn").onclick=copyShare;
   if($("inviteBtn"))$("inviteBtn").onclick=()=>openSheet("acctSheet");
+  if($("nudgeIn")){$("nudgeIn").onclick=()=>signIn();$("nudgeSkip").onclick=()=>{store.set("linkage-nudged",true);render()}}
 }
 function statTiles(st){
   const pct=st.played?Math.round(st.wins/st.played*100):0;
