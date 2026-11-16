@@ -217,6 +217,186 @@ const PUZZLES = [
   {name:"DNA repair pathways",items:["Mismatch","Base excision","Nucleotide excision","End joining"],why:"Nucleotide excision fixes thymine dimers. Nonhomologous end joining patches double-strand breaks."},
   {name:"Non-Mendelian inheritance",items:["Codominance","Incomplete dominance","Epistasis","Pleiotropy"],why:"Epistasis is one gene masking another. Pleiotropy is one gene affecting many traits."},
   {name:"___ blot",items:["Southern","Northern","Western","Eastern"],why:"Southern detects DNA, Northern RNA, Western protein, Eastern post-translational modifications."}
+ ]},
+ {groups:[
+  {name:"Autosomal recessive",items:["Cystic fibrosis", "Sickle cell", "Tay-Sachs", "PKU"],why:"Two mutant copies are needed, so carrier parents are usually healthy. Friedreich ataxia is also autosomal recessive, which is the bait."},
+  {name:"X-linked recessive",items:["Hemophilia A", "Duchenne", "Color blindness", "G6PD deficiency"],why:"The gene sits on the X chromosome, so males are affected far more often. Fragile X is X-linked too, but it belongs with the repeat disorders."},
+  {name:"Autosomal dominant",items:["Achondroplasia", "Neurofibromatosis", "Marfan", "Polycystic kidney"],why:"One mutant copy is enough. Huntington's and myotonic dystrophy are dominant too, but they belong with the repeat disorders."},
+  {name:"Trinucleotide repeat disorders",items:["Huntington's", "Fragile X", "Myotonic dystrophy", "Friedreich ataxia"],why:"Each comes from an expanded three-letter repeat: CAG, CGG, CTG and GAA. They cover dominant, recessive and X-linked inheritance."}
+ ]},
+ {groups:[
+  {name:"SI units named after people",items:["Newton", "Watt", "Pascal", "Hertz"],why:"All four honor scientists. Joule does too, but it has a better home."},
+  {name:"Units of energy",items:["Joule", "Calorie", "Electron-volt", "Kilowatt-hour"],why:"Joules, calories, electron-volts and kilowatt-hours all measure energy. A watt is power and a newton is force."},
+  {name:"Active when phosphorylated",items:["Glycogen phosphorylase", "Phosphorylase kinase", "Hormone-sensitive lipase", "FBPase-2"],why:"Glucagon and epinephrine push these toward phosphorylation through PKA, which turns on glycogen breakdown and fat mobilization. In liver, phosphorylation switches the bifunctional PFK-2 and FBPase-2 enzyme to its FBPase-2 activity."},
+  {name:"Active when dephosphorylated",items:["Glycogen synthase", "Pyruvate kinase", "PDH", "HMG-CoA reductase"],why:"The fed state, driven by insulin, removes phosphates and turns on storage and synthesis. Liver pyruvate kinase is switched off by phosphorylation."}
+ ]},
+ {groups:[
+  {name:"Schizophrenia",items:["Hallucinations", "Delusions", "Flat affect", "Dopamine"],why:"Positive symptoms like hallucinations and delusions, plus negative symptoms like flat affect. The dopamine hypothesis links it to overactive dopamine signaling."},
+  {name:"Parkinson's disease",items:["Substantia nigra", "Lewy bodies", "Resting tremor", "Bradykinesia"],why:"Dopamine neurons in the substantia nigra die, which causes tremor at rest and slow movement. Lewy bodies are the hallmark inclusions."},
+  {name:"Alzheimer's disease",items:["Amyloid plaques", "Neurofibrillary tangles", "Hippocampus", "Acetylcholine"],why:"Amyloid plaques and tau tangles build up, starting near the hippocampus, along with loss of cholinergic neurons."},
+  {name:"Multiple sclerosis",items:["Demyelination", "Oligodendrocytes", "Optic neuritis", "Relapsing-remitting"],why:"An autoimmune attack on CNS myelin, which oligodendrocytes make. Optic neuritis is a classic first sign, and symptoms often come and go."}
+ ]},
+ {groups:[
+  {name:"Neutral salts",items:["NaCl", "KNO3", "LiBr", "NaClO4"],why:"Each pairs a strong acid with a strong base, so neither ion reacts with water."},
+  {name:"Acidic salts",items:["NH4Cl", "AlCl3", "FeCl3", "NH4NO3"],why:"Ammonium is a weak acid, and small highly charged metal ions like Al3+ and Fe3+ pull water apart and release H+."},
+  {name:"Basic salts",items:["NaF", "NaCN", "Na2CO3", "Sodium acetate"],why:"The anions are conjugate bases of weak acids, so they pull H+ from water and make OH-."},
+  {name:"Insoluble salts",items:["AgCl", "BaSO4", "CaCO3", "PbI2"],why:"Solubility rules in action. CaCO3 looks basic and AgCl looks neutral, which is the trap."}
+ ]},
+ {groups:[
+  {name:"Preoperational stage",items:["Egocentrism", "Centration", "Animism", "Symbolic play"],why:"Roughly ages 2 to 7. Kids struggle to take another view and focus on one feature at a time."},
+  {name:"Concrete operational stage",items:["Conservation", "Reversibility", "Seriation", "Decentration"],why:"Roughly ages 7 to 11, with logical thinking about concrete objects. Decentration means weighing several features at once, the opposite of centration."},
+  {name:"Concave mirror",items:["Converging", "Positive f", "Real images", "Headlight reflector"],why:"It focuses light, has a positive focal length, and forms real images when the object is beyond the focal point."},
+  {name:"Convex mirror",items:["Diverging", "Negative f", "Always virtual", "Side-view mirror"],why:"It spreads light and only makes upright, smaller, virtual images, which is why side mirrors warn that objects are closer than they appear."}
+ ]},
+ {groups:[
+  {name:"Fatty acid synthesis",items:["Malonyl-CoA", "NADPH", "Fatty acid synthase", "Acetyl-CoA carboxylase"],why:"Happens in the cytosol after meals. Acetyl-CoA carboxylase is the committed step and makes malonyl-CoA."},
+  {name:"Beta-oxidation",items:["Carnitine", "CPT-I", "Acyl-CoA dehydrogenase", "Thiolase"],why:"Fatty acids enter mitochondria on the carnitine shuttle and get chopped into acetyl-CoA. CPT-I is the key regulated step, and malonyl-CoA blocks it."},
+  {name:"Reliability",items:["Test-retest", "Inter-rater", "Split-half", "Cronbach's alpha"],why:"Reliability means consistent results over time, between observers and across items."},
+  {name:"Validity",items:["Face", "Content", "Construct", "Criterion"],why:"Validity means measuring what you claim to measure. Face validity is just whether it looks right."}
+ ]},
+ {groups:[
+  {name:"Competitive inhibitor",items:["Resembles substrate", "Raises apparent Km", "Same Vmax", "Lines meet on y-axis"],why:"It competes for the active site, so enough substrate can outcompete it. Km looks higher while Vmax stays the same."},
+  {name:"Noncompetitive inhibitor",items:["Allosteric site", "Same Km", "Lowers Vmax", "Lines meet on x-axis"],why:"It binds away from the active site, so substrate can't outcompete it. Vmax drops while Km stays the same."},
+  {name:"Central route persuasion",items:["Strong arguments", "High motivation", "Lasting change", "Careful thinking"],why:"In the elaboration likelihood model, the central route needs attention and effort, and it produces more durable attitude change."},
+  {name:"Peripheral route persuasion",items:["Attractive speaker", "Celebrity endorsement", "Catchy slogan", "Short-lived change"],why:"The peripheral route runs on surface cues instead of the argument, so the change tends not to last."}
+ ]},
+ {groups:[
+  {name:"Sympathetic nervous system",items:["Thoracolumbar", "Norepinephrine", "Bronchodilation", "Pupil dilation"],why:"Fight or flight. These nerves leave the thoracic and lumbar spinal cord, and postganglionic neurons mostly release norepinephrine."},
+  {name:"Parasympathetic nervous system",items:["Craniosacral", "Vagus nerve", "Bronchoconstriction", "Pupil constriction"],why:"Rest and digest. Outflow runs through cranial nerves and sacral nerves, and the vagus carries most of it."},
+  {name:"SN2",items:["Backside attack", "Inversion", "1° substrate", "Polar aprotic"],why:"One concerted step, so the nucleophile hits from behind and flips the stereocenter. It prefers unhindered carbons and polar aprotic solvents."},
+  {name:"SN1",items:["Carbocation", "Racemization", "3° substrate", "Polar protic"],why:"Two steps through a planar carbocation, so the product is a racemic mix. It favors tertiary carbons and polar protic solvents."}
+ ]},
+ {groups:[
+  {name:"Tumor suppressors",items:["p53", "Rb", "BRCA1", "APC"],why:"These genes brake the cell cycle, so both copies have to be lost before cancer takes off."},
+  {name:"Oncogenes",items:["Ras", "Myc", "Abl", "HER2"],why:"Gain of function in one copy is enough, like a growth signal stuck on. They start life as normal proto-oncogenes."},
+  {name:"Galvanic cell",items:["Spontaneous", "Anode is negative", "Positive E°cell", "Makes current"],why:"A spontaneous redox reaction powers the circuit, and electrons flow from the negative anode to the positive cathode."},
+  {name:"Electrolytic cell",items:["Nonspontaneous", "Anode is positive", "Negative E°cell", "Needs a battery"],why:"An outside power source forces the reaction, which flips the electrode signs. Oxidation still happens at the anode."}
+ ]},
+ {groups:[
+  {name:"Zero-order reactions",items:["Rate = k", "[A] vs t is linear", "Half-life shrinks", "Units of M/s"],why:"The rate ignores concentration, so concentration falls in a straight line and half-lives get shorter as the reactant runs down."},
+  {name:"First-order reactions",items:["Rate = k[A]", "ln[A] vs t is linear", "Constant half-life", "Units of 1/s"],why:"Radioactive decay is the classic example. Every half-life is the same length no matter how much is left."},
+  {name:"Second-order reactions",items:["Rate = k[A]²", "1/[A] vs t is linear", "Half-life grows", "Units of L/mol·s"],why:"The rate depends on concentration squared, so half-lives get longer as the reactant is used up."},
+  {name:"___ effect",items:["Bohr", "Doppler", "Halo", "Founder"],why:"Bohr shifts the hemoglobin curve, Doppler shifts wave frequency, halo is a social perception bias, and the founder effect is lost genetic diversity in a small founding group."}
+ ]},
+ {groups:[
+  {name:"Ectoderm derivatives",items:["Epidermis", "Neural tube", "Lens", "Adrenal medulla"],why:"The outer skin layer and the nervous system. The adrenal medulla comes from neural crest cells, which are ectoderm."},
+  {name:"Mesoderm derivatives",items:["Heart", "Kidney", "Gonads", "Adrenal cortex"],why:"Muscle, bone, blood, and most of the urinary and reproductive systems. The adrenal cortex is mesoderm, unlike the medulla."},
+  {name:"Endoderm derivatives",items:["Liver", "Pancreas", "Thyroid", "Lung lining"],why:"The lining of the gut tube and the organs that bud off from it."},
+  {name:"Extraembryonic membranes",items:["Amnion", "Chorion", "Allantois", "Yolk sac"],why:"The amnion cushions, the chorion helps form the placenta, the allantois handles waste and becomes umbilical vessels, and the yolk sac makes early blood cells."}
+ ]},
+ {groups:[
+  {name:"Rods",items:["Scotopic vision", "Rhodopsin", "Peripheral retina", "High sensitivity"],why:"Rods are very sensitive and see no color, so they handle night vision and the edges of your visual field."},
+  {name:"Cones",items:["Photopic vision", "Fovea", "Color vision", "Three types"],why:"Cones need bright light, pack into the fovea, and come in S, M and L types."},
+  {name:"Innate immunity",items:["Neutrophils", "Complement", "NK cells", "Toll-like receptors"],why:"Fast, broad and no memory. Toll-like receptors spot general pathogen patterns."},
+  {name:"Cells named after people",items:["Schwann cell", "Sertoli cell", "Leydig cell", "Kupffer cell"],why:"Schwann cells myelinate peripheral axons, Sertoli cells nurture sperm, Leydig cells make testosterone, and Kupffer cells are liver macrophages, so they look innate."}
+ ]},
+ {groups:[
+  {name:"Mitosis",items:["Identical daughters", "Diploid daughters", "One division", "Growth and repair"],why:"One round of division makes two genetically identical diploid cells."},
+  {name:"Meiosis",items:["Crossing over", "Haploid gametes", "Two divisions", "Independent assortment"],why:"Two rounds of division make four genetically different haploid cells."},
+  {name:"Hemoglobin",items:["Tetramer", "Cooperative binding", "Sigmoidal curve", "2,3-BPG"],why:"Four subunits that help each other bind oxygen, which gives the S-shaped curve. 2,3-BPG shifts it to the right."},
+  {name:"Myoglobin",items:["Monomer", "Hyperbolic curve", "Higher O2 affinity", "Muscle storage"],why:"A single subunit with no cooperativity, so its curve is hyperbolic. It grips oxygen tightly and stores it in muscle."}
+ ]},
+ {groups:[
+  {name:"Prokaryotic features",items:["Nucleoid", "Circular chromosome", "70S ribosomes", "Peptidoglycan wall"],why:"No nucleus here. Bacterial cell walls are built from peptidoglycan."},
+  {name:"Eukaryotic features",items:["Membrane-bound organelles", "80S ribosomes", "Linear chromosomes", "Introns"],why:"A real nucleus, and genes that are split up by introns."},
+  {name:"Explicit memory",items:["Episodic", "Semantic", "Declarative", "Hippocampus"],why:"Conscious recall of events and facts, and it depends on the hippocampus."},
+  {name:"Implicit memory",items:["Procedural", "Priming", "Conditioned responses", "Cerebellum"],why:"Unconscious memory like skills and habits. These lean on the cerebellum and basal ganglia."}
+ ]},
+ {groups:[
+  {name:"Microfilaments",items:["Actin", "Microvilli", "Cytokinesis", "Amoeboid movement"],why:"Thin actin filaments push membranes out, pinch dividing cells in two and drive crawling."},
+  {name:"Intermediate filaments",items:["Keratin", "Lamins", "Vimentin", "Neurofilaments"],why:"Rope-like filaments that resist tension. Lamins line the nuclear envelope."},
+  {name:"Microtubules",items:["Tubulin", "Centrioles", "Spindle fibers", "Kinesin"],why:"Hollow tubes of tubulin that build spindles and cilia and serve as tracks for motors like kinesin."},
+  {name:"Cell junctions",items:["Tight junction", "Gap junction", "Desmosome", "Hemidesmosome"],why:"Tight junctions seal, gap junctions connect cytoplasm, desmosomes rivet cells together, and hemidesmosomes anchor cells to the basement membrane."}
+ ]},
+ {groups:[
+  {name:"Heuristics and biases",items:["Availability", "Representativeness", "Anchoring", "Confirmation"],why:"Mental shortcuts and thinking traps that trade accuracy for speed."},
+  {name:"Attribution concepts",items:["Fundamental attribution error", "Actor-observer", "Self-serving", "Just-world"],why:"Ways people explain behavior. The fundamental attribution error blames other people's character and ignores their situation."},
+  {name:"Memory phenomena",items:["Primacy", "Recency", "Flashbulb", "Misinformation"],why:"Primacy and recency are the serial position effect. Flashbulb memories feel vivid, and misinformation can rewrite what you recall."},
+  {name:"Compliance techniques",items:["Foot-in-the-door", "Door-in-the-face", "Low-ball", "That's-not-all"],why:"Ways to get a yes. Foot-in-the-door starts small, door-in-the-face starts huge, low-ball changes terms after agreement, and that's-not-all adds a sweetener."}
+ ]},
+ {groups:[
+  {name:"Spontaneous at low temperature",items:["Freezing", "Condensation", "Deposition", "Haber process"],why:"Both enthalpy and entropy decrease, so the process only wins out when the temperature is low."},
+  {name:"Spontaneous at high temperature",items:["Melting", "Vaporization", "Sublimation", "Limestone decomposition"],why:"Both enthalpy and entropy increase, so the entropy term wins once the temperature is high enough."},
+  {name:"DNA techniques",items:["Southern blot", "Sanger sequencing", "PCR", "Restriction digest"],why:"Southern blots detect specific DNA, Sanger reads sequences, PCR copies it, and restriction enzymes cut it."},
+  {name:"Protein techniques",items:["Western blot", "ELISA", "SDS-PAGE", "Isoelectric focusing"],why:"Western blots and ELISA use antibodies, SDS-PAGE sorts by size, and isoelectric focusing sorts by pI."}
+ ]},
+ {groups:[
+  {name:"Slow-wave sleep",items:["Delta waves", "Sleepwalking", "Night terrors", "Growth hormone release"],why:"Stage N3 is the deepest non-REM sleep, with slow delta waves and bursts of growth hormone."},
+  {name:"REM sleep",items:["Dreaming", "Muscle atonia", "Rapid eye movements", "Wake-like EEG"],why:"The brain looks awake on EEG while the body is paralyzed, which is why REM is called paradoxical sleep."},
+  {name:"Monocular depth cues",items:["Linear perspective", "Interposition", "Relative size", "Texture gradient"],why:"Depth cues that work with just one eye."},
+  {name:"Gestalt principles",items:["Proximity", "Similarity", "Closure", "Continuity"],why:"Rules the brain uses to group pieces into wholes."}
+ ]},
+ {groups:[
+  {name:"Founders of sociology",items:["Durkheim", "Weber", "Marx", "Comte"],why:"Comte named the field, Durkheim made it empirical, Marx studied class conflict and Weber studied rationalization and authority."},
+  {name:"Learning theorists",items:["Pavlov", "Skinner", "Bandura", "Thorndike"],why:"Pavlov did classical conditioning, Thorndike the law of effect, Skinner operant conditioning and Bandura observational learning."},
+  {name:"Stage theorists",items:["Piaget", "Erikson", "Kohlberg", "Freud"],why:"Cognitive, psychosocial, moral and psychosexual stages, in that order."},
+  {name:"Symbolic interactionists",items:["Mead", "Cooley", "Goffman", "Blumer"],why:"Society is built from shared symbols and everyday interaction. Cooley gave the looking-glass self, Goffman gave dramaturgy, and Blumer named the approach."}
+ ]},
+ {groups:[
+  {name:"Infrared spectroscopy",items:["C=O stretch", "Broad O-H band", "Nitrile peak", "Fingerprint region"],why:"IR reads bond vibrations, so it flags functional groups like carbonyls, alcohols and nitriles."},
+  {name:"Proton NMR",items:["Chemical shift", "Splitting", "Integration", "TMS reference"],why:"NMR maps hydrogen environments. Shift tells the neighborhood, splitting tells the neighbors, and integration counts the hydrogens."},
+  {name:"Mass spectrometry",items:["Molecular ion", "Base peak", "Fragmentation", "M+2 peak"],why:"It weighs ions. The M+2 peak is the clue for chlorine or bromine."},
+  {name:"UV-Vis spectroscopy",items:["Conjugation", "Lambda max", "Beer-Lambert law", "Pi to pi star"],why:"UV-Vis measures electronic transitions, and longer conjugation pushes absorption to longer wavelengths."}
+ ]},
+ {groups:[
+  {name:"Coenzymes from B vitamins",items:["NAD+", "FAD", "CoA", "TPP"],why:"NAD+ comes from niacin, FAD from riboflavin, CoA from pantothenic acid and TPP from thiamine."},
+  {name:"TCA cycle intermediates",items:["Citrate", "Isocitrate", "Succinate", "Malate"],why:"Four of the cycle's intermediates. Oxaloacetate, alpha-ketoglutarate, succinyl-CoA and fumarate round it out."},
+  {name:"Urea cycle intermediates",items:["Ornithine", "Citrulline", "Argininosuccinate", "Arginine"],why:"Ornithine picks up carbamoyl phosphate to make citrulline, and arginase splits arginine back into ornithine and urea."},
+  {name:"Zinc-containing",items:["Carbonic anhydrase", "Carboxypeptidase A", "Alcohol dehydrogenase", "Zinc finger"],why:"Zn2+ helps these enzymes and DNA-binding motifs work. Carbonic anhydrase uses it to hydrate CO2."}
+ ]},
+ {groups:[
+  {name:"DNA replication",items:["Helicase", "Primase", "DNA ligase", "Okazaki fragments"],why:"Helicase unwinds, primase lays RNA primers, and ligase seals the Okazaki fragments on the lagging strand."},
+  {name:"Transcription",items:["Promoter", "TATA box", "Enhancer", "RNA polymerase II"],why:"Making RNA from a DNA template. The TATA box helps position the polymerase, and enhancers boost expression from far away."},
+  {name:"RNA processing",items:["5' cap", "Poly-A tail", "Splicing", "snRNPs"],why:"Eukaryotic mRNA gets a cap and tail and has its introns removed by the spliceosome, which is built from snRNPs."},
+  {name:"Translation",items:["Ribosome", "tRNA", "Codon", "Peptidyl transferase"],why:"Reading mRNA to build protein. Peptidyl transferase is a ribozyme in the large subunit that forms peptide bonds."}
+ ]},
+ {groups:[
+  {name:"Carboxylic acid derivatives",items:["Acid chloride", "Anhydride", "Ester", "Amide"],why:"Listed from most to least reactive toward nucleophilic acyl substitution."},
+  {name:"Reducing agents",items:["NaBH4", "LiAlH4", "DIBAL-H", "H2/Pd"],why:"NaBH4 is mild and reduces aldehydes and ketones. LiAlH4 is strong and also reduces esters and acids. DIBAL-H can stop an ester at the aldehyde."},
+  {name:"Mild oxidants",items:["PCC", "PDC", "Swern", "Dess-Martin"],why:"These oxidize primary alcohols to aldehydes and stop there."},
+  {name:"Strong oxidants",items:["Jones reagent", "KMnO4", "K2Cr2O7", "Chromic acid"],why:"In water or acid, primary alcohols keep going past the aldehyde to carboxylic acids."}
+ ]},
+ {groups:[
+  {name:"Anterior pituitary hormones",items:["FSH", "LH", "ACTH", "TSH"],why:"Tropic hormones that tell other glands to release their own hormones."},
+  {name:"Hypothalamic releasing hormones",items:["TRH", "GnRH", "CRH", "GHRH"],why:"They travel to the anterior pituitary through the portal system. Somatostatin is a hypothalamic inhibiting hormone, but it is also made in the pancreas."},
+  {name:"Pancreatic islet hormones",items:["Insulin", "Glucagon", "Somatostatin", "Pancreatic polypeptide"],why:"Alpha, beta, delta and PP cells. Delta cell somatostatin inhibits both insulin and glucagon."},
+  {name:"Gut hormones",items:["Gastrin", "CCK", "Secretin", "GIP"],why:"Released by the stomach and small intestine in response to food. CCK drives gallbladder contraction."}
+ ]},
+ {groups:[
+  {name:"Proximal tubule",items:["Glucose reabsorption", "Amino acid reabsorption", "Brush border", "Bulk reabsorption"],why:"Reclaims most of the filtrate, including all the glucose and amino acids."},
+  {name:"Descending limb",items:["Permeable to water", "Concentrates filtrate", "Thin segment", "No active transport"],why:"Water leaves passively into the salty medulla, so the filtrate gets more concentrated."},
+  {name:"Thick ascending limb",items:["Impermeable to water", "Na-K-2Cl transporter", "Dilutes filtrate", "Loop diuretic site"],why:"Salt is pumped out but water can't follow, which dilutes the filtrate. Loop diuretics block the Na-K-2Cl transporter here."},
+  {name:"Collecting duct",items:["ADH-sensitive", "Aquaporin insertion", "Urea recycling", "Final urine concentration"],why:"ADH inserts aquaporins to pull water back, which sets the final concentration of the urine."}
+ ]},
+ {groups:[
+  {name:"Linear",items:["Carbon dioxide", "Acetylene", "Hydrogen cyanide", "Beryllium chloride"],why:"Two electron groups and no lone pairs on the central atom give 180 degrees."},
+  {name:"Bent",items:["Water", "Sulfur dioxide", "Ozone", "Nitrite"],why:"A lone pair on the central atom bends the molecule."},
+  {name:"Trigonal planar",items:["Boron trifluoride", "Sulfur trioxide", "Carbonate", "Nitrate"],why:"Three electron groups and no lone pairs give flat 120 degree angles."},
+  {name:"Tetrahedral",items:["Methane", "Ammonium", "Sulfate", "Perchlorate"],why:"Four electron groups and no lone pairs give 109.5 degrees."}
+ ]},
+ {groups:[
+  {name:"Mood disorders",items:["Major depressive", "Bipolar I", "Dysthymia", "Cyclothymia"],why:"Dysthymia is a long-lasting low mood, and cyclothymia is a milder chronic version of bipolar swings."},
+  {name:"Anxiety disorders",items:["Panic disorder", "GAD", "Specific phobia", "Social anxiety"],why:"Excessive fear or worry. Panic disorder is marked by sudden attacks, and GAD is constant worry."},
+  {name:"Dissociative disorders",items:["Dissociative identity", "Depersonalization", "Dissociative amnesia", "Dissociative fugue"],why:"Disruptions in memory, identity or awareness of oneself."},
+  {name:"Cluster B personality disorders",items:["Borderline", "Narcissistic", "Antisocial", "Histrionic"],why:"The dramatic, emotional and erratic cluster."}
+ ]},
+ {groups:[
+  {name:"Simple diffusion",items:["Oxygen", "Nitric oxide", "Steroid hormones", "Ethanol"],why:"Small or lipid-soluble molecules slip through the membrane down their gradient with no protein help."},
+  {name:"Facilitated diffusion",items:["GLUT4", "Aquaporin", "K+ leak channel", "Na+ channel"],why:"Passive transport through proteins, still downhill with no ATP."},
+  {name:"Primary active transport",items:["Na+/K+ ATPase", "SERCA pump", "H+/K+ ATPase", "V-type ATPase"],why:"These burn ATP directly to move ions against their gradients."},
+  {name:"Secondary active transport",items:["SGLT", "Na+/Ca2+ exchanger", "Na+/H+ exchanger", "Na+/I- symporter"],why:"No direct ATP use. They borrow energy from the sodium gradient that the Na+/K+ pump builds."}
+ ]},
+ {groups:[
+  {name:"Transverse waves",items:["Light", "Radio waves", "S-waves", "Guitar string"],why:"The medium or field vibrates perpendicular to the direction of travel."},
+  {name:"Longitudinal waves",items:["Sound", "Ultrasound", "P-waves", "Spring compression"],why:"The medium vibrates back and forth along the direction of travel."},
+  {name:"Open pipe",items:["Antinodes at both ends", "All harmonics", "Wavelength is 2L", "Higher fundamental"],why:"Open at both ends means an antinode at each end, so every harmonic is allowed. The fundamental wavelength is 2L."},
+  {name:"Closed pipe",items:["Node at closed end", "Odd harmonics only", "Wavelength is 4L", "Lower fundamental"],why:"A closed end forces a node there, which allows only odd harmonics. The fundamental wavelength is 4L, so the pitch is lower for the same length."}
+ ]},
+ {groups:[
+  {name:"Respiratory acidosis",items:["Hypoventilation", "COPD", "Opioid overdose", "Rising CO2"],why:"Not enough breathing means CO2 builds up and pH falls."},
+  {name:"Respiratory alkalosis",items:["Hyperventilation", "Panic attack", "High altitude", "Pulmonary embolism"],why:"Too much breathing blows off CO2 and pH rises."},
+  {name:"Metabolic acidosis",items:["Diabetic ketoacidosis", "Lactic acidosis", "Diarrhea", "Renal failure"],why:"Acid piles up or bicarbonate is lost, so pH and bicarbonate both fall."},
+  {name:"Metabolic alkalosis",items:["Vomiting", "Diuretic overuse", "Antacid overuse", "Hyperaldosteronism"],why:"Acid is lost or bicarbonate is gained, so pH and bicarbonate both rise."}
  ]}
 ];
 
