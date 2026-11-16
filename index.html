@@ -99,6 +99,10 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
 .arch button small{display:block;font-weight:400;font-size:11px;color:var(--muted);margin-top:2px}
 .practice{background:var(--accent);color:#fff;font:600 12px var(--body);padding:6px 10px;border-radius:8px;text-align:center;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .acct-link{font-family:var(--mono);font-size:12px;background:var(--card);padding:10px;border-radius:8px;overflow-wrap:anywhere;margin:8px 0}
+.remind{border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;margin:12px 0}
+.remind label{display:flex;gap:10px;align-items:center;font-weight:600;font-size:14.5px;cursor:pointer}
+.remind input{width:20px;height:20px;accent-color:var(--accent)}
+.remind p{margin:6px 0 0 30px;font-size:12.5px;color:var(--muted);line-height:1.4}
 .practice button{background:none;border:1px solid #fff;color:#fff;border-radius:999px;padding:3px 10px;font:600 12px var(--body);cursor:pointer}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -376,8 +380,10 @@ function renderResult(){
    (cloud&&!practice?'<button class="btn" id="inviteBtn">Invite a friend</button>':'')+'</div>'+
    '<p style="margin:0;font-size:13px;color:var(--muted)">'+(practice?"Practice run, doesn't count toward your streak.":"Next puzzle at midnight.")+'</p>'+
    (!practice&&FIREBASE_CONFIG&&!cloud&&!store.get("linkage-nudged",false)?'<div class="nudge"><p>'+(won?"That streak only lives in this browser right now.":"Tomorrow is a fresh start.")+' Sign in and your streak and stats follow you on every device.</p><button class="btn primary" id="nudgeIn">Sign in with Google</button><button class="skip" id="nudgeSkip">not now</button></div>':'')+
+   (!practice&&cloud&&!cloud.reminders()&&!store.get("linkage-remind-skip",false)?'<div class="nudge"><p>Want a heads-up before your streak ends? We email around 7pm, only on days you have not played yet.</p><button class="btn primary" id="remOn">Turn on email reminders</button><button class="skip" id="remSkip">not now</button></div>':'')+
    '</div>';
   $("copyBtn").onclick=copyShare;
+  if($("remOn")){$("remOn").onclick=async()=>{try{await cloud.setReminders(true);toast("Reminders on. Watch for an email around 7pm");render()}catch(e){toast("Couldn't turn on reminders")}};$("remSkip").onclick=()=>{store.set("linkage-remind-skip",true);render()}}
   if($("inviteBtn"))$("inviteBtn").onclick=()=>openSheet("acctSheet");
   if($("nudgeIn")){$("nudgeIn").onclick=()=>signIn();$("nudgeSkip").onclick=()=>{store.set("linkage-nudged",true);render()}}
 }
@@ -424,8 +430,10 @@ function renderAcct(){
   } else {
     p.innerHTML='<h3>'+esc(cloud.name()||"Your account")+'</h3><p style="margin-top:0;color:var(--muted)">'+esc(cloud.email()||"")+'</p>'+
     '<p><b>Bonus tries available: '+cloud.credits()+'</b><br>Each friend who signs up from your link and finishes a daily puzzle gives you one. A bonus try gives you a 5th mistake on a daily puzzle.</p>'+
+    '<div class="remind"><label for="remToggle"><input type="checkbox" id="remToggle"'+(cloud.reminders()?" checked":"")+'> Email me a streak reminder</label><p>Around 7pm your time, and only on days you have not played yet. Turn it off any time.</p></div>'+
     '<div class="acct-link">'+esc(cloud.inviteLink())+'</div>'+
     '<div class="controls" style="justify-content:flex-start"><button class="btn primary" id="copyInvite">Copy invite link</button><button class="btn" id="outBtn">Sign out</button><button class="btn" data-close>Close</button></div>';
+    $("remToggle").onchange=async e=>{const on=e.target.checked;try{await cloud.setReminders(on);toast(on?"Reminders on":"Reminders off")}catch(_){e.target.checked=!on;toast("Couldn't save. Try again")}};
     $("copyInvite").onclick=()=>copyText("I've been doing this daily MCAT puzzle, try it: "+cloud.inviteLink(),"Invite link copied");
     $("outBtn").onclick=()=>cloud.signOut();
   }
@@ -488,14 +496,22 @@ if(FIREBASE_CONFIG){
           credits=(await F.getCountFromServer(q)).data().count}catch(e){}
       }
       await refreshCredits();
+      let remindersOn=!!(snap.exists()&&snap.data().emailReminders);
+      const myTz=()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||"America/Chicago"}catch(e){return"America/Chicago"}};
       cloud={
         name:()=>user.displayName, email:()=>user.email,
         credits:()=>Math.max(0,credits-usedBonus()),
         inviteLink:()=>location.origin+location.pathname+"?ref="+user.uid,
         saveDay:(k,d)=>F.setDoc(uRef,{days:{[k]:d},updatedAt:F.serverTimestamp()},{merge:true}).catch(()=>toast("Couldn't sync. Saved on this device")),
         markReferralPlayed:()=>{if(refPending){refPending=false;F.updateDoc(rRef,{played:true}).catch(()=>{})}},
-        signOut:()=>{Au.signOut(auth);closeSheets()}
+        signOut:()=>{Au.signOut(auth);closeSheets()},
+        reminders:()=>remindersOn,
+        setReminders:async on=>{
+          await F.setDoc(uRef,{emailReminders:on,tz:myTz(),reminderUpdatedAt:F.serverTimestamp()},{merge:true});
+          remindersOn=on; track(on?"reminders-on":"reminders-off");
+        }
       };
+      if(remindersOn)F.setDoc(uRef,{tz:myTz()},{merge:true}).catch(()=>{});
       if(!store.get("linkage-signin-tracked",false)){store.set("linkage-signin-tracked",true);track("signed-in")}
       if(Object.keys(days).some(k=>k[0]!=="x"&&days[k].status!=="playing"&&days[k].finishedDay===+k))cloud.markReferralPlayed();
       load(num,practice);
