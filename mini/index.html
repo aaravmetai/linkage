@@ -48,7 +48,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
 }
 .clue{background:var(--card);border-radius:10px;padding:10px 14px;min-height:56px;display:flex;gap:10px;align-items:center;font-size:15px;line-height:1.35}
 .clue b{font-family:var(--display);font-weight:800;white-space:nowrap}
-.timer{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.timer{margin-left:auto;font-family:var(--mono);font-weight:500;font-size:18px;color:var(--ink);background:var(--paper);border-radius:8px;padding:4px 10px}
 .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;width:min(100%,340px);margin:0 auto;touch-action:manipulation}
 .cell{position:relative;aspect-ratio:1;border-radius:6px;background:var(--card);border:none;padding:0;display:flex;align-items:center;justify-content:center;
   font:800 clamp(22px,7vw,30px) var(--display);color:var(--ink);cursor:pointer;text-transform:uppercase}
@@ -75,6 +75,8 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
 .kb button{flex:1;max-width:38px;height:44px;border:none;border-radius:7px;background:var(--card);color:var(--ink);font:600 16px var(--body);cursor:pointer;padding:0}
 .kb button.wide{max-width:60px;font-size:14px}
 .kb button:active{transform:scale(.94)}
+@media (hover:hover) and (pointer:fine){.kb{display:none!important}.wrap{padding-bottom:40px}}
+@media (hover:none),(pointer:coarse){.wrap{padding-bottom:210px}}
 .result{background:var(--card);border-radius:12px;padding:16px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
 .result h2{font-family:var(--display);font-weight:800;font-size:24px;margin:0}
 .result p{margin:0;font-size:14px;color:var(--muted)}
@@ -85,6 +87,8 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
 .toast.on{opacity:1}
 .sheet{position:fixed;inset:0;background:rgba(10,14,18,.5);display:none;align-items:flex-end;justify-content:center;z-index:10}
 .sheet.on{display:flex}
+.sheet.center{align-items:center;padding:0 20px}
+.sheet.center .panel{border-radius:16px;max-width:340px;padding:22px 20px;text-align:center}
 .panel{background:var(--paper);color:var(--ink);width:100%;max-width:540px;border-radius:16px 16px 0 0;padding:20px 18px 40px;max-height:85%;overflow:auto}
 .panel h3{font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 10px}
 .panel p,.panel li{font-size:14.5px;line-height:1.5}
@@ -130,6 +134,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
   </ul>
   <div class="controls"><button class="btn primary" data-close>Got it</button></div>
 </div></div>
+<div class="sheet center" id="wrongSheet"><div class="panel"><h3>Something is not right</h3><p>Every square is filled, but at least one letter is wrong. The timer is paused until you hit OK.</p><div class="controls"><button class="btn primary" id="wrongOk" data-close>OK</button></div></div></div>
 <div class="sheet" id="archSheet"><div class="panel"><h3>Past minis</h3><div id="archList"></div></div></div>
 <script>
 const XW = [{"w": ["OVARY", "TRAIT", "OCTET", "AORTA", "YEAST"], "c": ["Organ that releases eggs", "Enduring personality characteristic", "Eight valence electrons", "Largest artery in the body", "Single-celled fungus used in fermentation"]}, {"w": ["VIRUS", "SOLID", "VOLTS", "RENAL", "SOUND"], "c": ["Acellular particle that needs a host to replicate", "State with fixed shape and volume", "Units of electric potential", "Relating to the kidney", "Longitudinal wave in air"]}, {"w": ["ANVIL", "LYSIS", "ALKYL", "VAGUS", "LEWIS"], "c": ["Ossicle shaped like a smith's block", "Cell bursting", "Saturated carbon substituent", "Tenth cranial nerve", "Acid that accepts an electron pair"]}, {"w": ["ANVIL", "LASER", "ALDOL", "VAGUS", "LIVER"], "c": ["Ossicle shaped like a smith's block", "Source of coherent light", "Reaction that joins two carbonyl compounds", "Tenth cranial nerve", "Organ that makes bile"]}, {"w": ["STATE", "STAGE", "SALTS", "ALPHA", "ELUTE"], "c": ["Solid, liquid or gas", "Piaget described four of these", "Ionic products of neutralization", "Helix type stabilized by hydrogen bonds along the backbone", "Wash a compound off a chromatography column"]}, {"w": ["ALPHA", "SALTS", "ACIDS", "PUPIL", "ATOMS"], "c": ["Helix type stabilized by hydrogen bonds along the backbone", "Ionic products of neutralization", "Proton donors", "Opening that lets light into the eye", "Smallest units of an element"]}, {"w": ["CILIA", "NODES", "CODON", "LIPID", "ATOMS"], "c": ["Hair-like projections that sweep mucus", "Points of zero displacement in a standing wave", "Three nucleotide unit read by a tRNA anticodon", "Fat, oil or steroid, broadly", "Smallest units of an element"]}, {"w": ["ROLES", "LASER", "RENAL", "LEWIS", "SUGAR"], "c": ["Expected behaviors tied to a social position", "Source of coherent light", "Relating to the kidney", "Acid that accepts an electron pair", "Simple carbohydrate"]}, {"w": ["HABIT", "TESLA", "HEART", "BEATS", "THETA"], "c": ["Learned automatic behavior", "Unit of magnetic field strength", "Organ with four chambers", "Pulsing caused by two close frequencies", "Brain waves seen in light sleep"]}, {"w": ["DIODE", "MOTOR", "DREAM", "OCTET", "ESTER"], "c": ["One way circuit element", "Type of neuron that signals muscles", "Vivid imagery during REM", "Eight valence electrons", "Product of an acid and an alcohol"]}, {"w": ["FREUD", "SERUM", "FOCUS", "ETHER", "DREAM"], "c": ["Father of psychoanalysis", "Blood fluid left after clotting", "Point where parallel rays converge", "R-O-R compound", "Vivid imagery during REM"]}, {"w": ["CELLS", "NORMS", "CODON", "LIVER", "SALTS"], "c": ["Basic units of life", "Shared rules of acceptable behavior", "Three nucleotide unit read by a tRNA anticodon", "Organ that makes bile", "Ionic products of neutralization"]}, {"w": ["NODES", "STATE", "NORMS", "DELTA", "STAGE"], "c": ["Points of zero displacement in a standing wave", "Solid, liquid or gas", "Shared rules of acceptable behavior", "Slow waves of deep sleep", "Piaget described four of these"]}, {"w": ["ALDOL", "YEAST", "ASSAY", "DELTA", "LIGHT"], "c": ["Reaction that joins two carbonyl compounds", "Single-celled fungus used in fermentation", "Lab test that measures a substance", "Slow waves of deep sleep", "Visible electromagnetic radiation"]}, {"w": ["ALGAE", "AMINE", "ATRIA", "GOLGI", "ELUTE"], "c": ["Photosynthetic aquatic eukaryotes", "Organic base containing nitrogen", "Upper chambers of the heart", "Organelle that modifies and ships proteins", "Wash a compound off a chromatography column"]}, {"w": ["POWER", "LYSIS", "PUPIL", "WAVES", "ROLES"], "c": ["Work done per unit time", "Cell bursting", "Opening that lets light into the eye", "Disturbances that carry energy", "Expected behaviors tied to a social position"]}, {"w": ["CILIA", "NORMS", "COLON", "LIVER", "ACIDS"], "c": ["Hair-like projections that sweep mucus", "Shared rules of acceptable behavior", "Part of the large intestine that absorbs water", "Organ that makes bile", "Proton donors"]}, {"w": ["PHASE", "LASER", "PUPIL", "ATOMS", "ETHER"], "c": ["Offset between two waves, or a state of matter", "Source of coherent light", "Opening that lets light into the eye", "Smallest units of an element", "R-O-R compound"]}, {"w": ["AMINO", "SEMEN", "ACIDS", "ILEUM", "ORGAN"], "c": ["___ acid, a protein building block", "Fluid that carries sperm", "Proton donors", "Last section of the small intestine", "Group of tissues working toward one function"]}, {"w": ["LIGHT", "HEART", "LYMPH", "GAMMA", "TRAIT"], "c": ["Visible electromagnetic radiation", "Organ with four chambers", "Fluid carried by lacteals", "Most energetic type of nuclear radiation", "Enduring personality characteristic"]}, {"w": ["TESLA", "ALDOL", "THETA", "SOUND", "ANVIL"], "c": ["Unit of magnetic field strength", "Reaction that joins two carbonyl compounds", "Brain waves seen in light sleep", "Longitudinal wave in air", "Ossicle shaped like a smith's block"]}, {"w": ["PHASE", "MOLAR", "PRISM", "ALKYL", "ESTER"], "c": ["Offset between two waves, or a state of matter", "Moles per liter", "Splits white light into colors", "Saturated carbon substituent", "Product of an acid and an alcohol"]}, {"w": ["GLAND", "STATE", "GENES", "ALPHA", "DRIVE"], "c": ["Organ that secretes hormones", "Solid, liquid or gas", "Units of heredity", "Helix type stabilized by hydrogen bonds along the backbone", "Internal push to satisfy a need"]}, {"w": ["PRIME", "MOLAR", "PRISM", "IDEAL", "ETHER"], "c": ["Earlier stimulus that biases a later response", "Moles per liter", "Splits white light into colors", "___ self, the person you want to be", "R-O-R compound"]}, {"w": ["FOCUS", "DREAM", "FARAD", "CASTE", "SERUM"], "c": ["Point where parallel rays converge", "Vivid imagery during REM", "Unit of capacitance", "Rigid hereditary class system", "Blood fluid left after clotting"]}, {"w": ["GLIAL", "SOLID", "GASES", "IDEAL", "LIPID"], "c": ["___ cells support neurons", "State with fixed shape and volume", "Particles that fill their container", "___ self, the person you want to be", "Fat, oil or steroid, broadly"]}, {"w": ["CLASS", "ILEUM", "COCCI", "AMIDE", "SERUM"], "c": ["Social stratification category", "Last section of the small intestine", "Spherical bacteria", "Functional group in a peptide bond", "Blood fluid left after clotting"]}, {"w": ["ORGAN", "CELLS", "OPTIC", "GLIAL", "NODES"], "c": ["Group of tissues working toward one function", "Basic units of life", "___ nerve, which carries vision to the brain", "___ cells support neurons", "Points of zero displacement in a standing wave"]}, {"w": ["BEATS", "STAGE", "BONDS", "AORTA", "SPORE"], "c": ["Pulsing caused by two close frequencies", "Piaget described four of these", "Links between atoms", "Largest artery in the body", "Dormant survival structure of bacteria and fungi"]}, {"w": ["FOCUS", "DRIVE", "FREUD", "COCCI", "SPORE"], "c": ["Point where parallel rays converge", "Internal push to satisfy a need", "Father of psychoanalysis", "Spherical bacteria", "Dormant survival structure of bacteria and fungi"]}];
@@ -260,9 +265,10 @@ async function share(){
 }
 function startTimer(){
   clearInterval(tick);
-  tick=setInterval(()=>{if(S.status==="playing"&&S.started&&!document.hidden){S.t++;$("timer").textContent=fmtTime(S.t);if(S.t%5===0)save()}},1000);
+  tick=setInterval(()=>{if(S.status==="playing"&&!document.hidden&&!document.querySelector(".sheet.on")){S.t++;$("timer").textContent=fmtTime(S.t);if(S.t%5===0)save()}},1000);
 }
-function begin(){if(!S.started){S.started=true;if(!practice)track("mini-started")}}
+let tracked=false;
+function begin(){S.started=true;if(!tracked){tracked=true;if(!practice)track("mini-started")}}
 function move(step){
   const e=curEntry();if(!e)return;
   const i=e.cells.findIndex(c=>c[0]===sel[0]&&c[1]===sel[1]);
@@ -292,7 +298,7 @@ function checkDone(){
     S.status="won";S.finishedDay=TODAY;save();wrong=new Set();
     track("mini-won");render();
     setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"}),150);
-  }else toast("All filled, but something is off. Try Check.");
+  }else openSheet("wrongSheet");
 }
 $("checkBtn").onclick=()=>{
   begin();S.checks++;wrong=new Set();
