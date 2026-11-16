@@ -234,6 +234,8 @@ const FIREBASE_CONFIG = {
 const EPOCH = new Date(2026,10,12); // puzzle #1 = Nov 12, 2026
 const SQ = ["🟨","🟩","🟦","🟪"];
 const $ = id => document.getElementById(id);
+// anonymous usage counts via GoatCounter events, no personal data
+function track(name){try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:name,title:name,event:true})}catch(e){}}
 const store = {
   get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
   set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
@@ -335,6 +337,7 @@ function submit(){
   if(S.mistakes>=S.max){outOfMistakes();return}
   const pick=[...selected]; const k=pick.slice().sort().join("|");
   if(S.tried.includes(k)){toast("Already guessed");return}
+  if(!practice&&S.history.length===0)track("puzzle-started");
   S.tried.push(k);
   const gs=pick.map(groupOf); S.history.push(gs.join(""));
   const counts={}; gs.forEach(g=>counts[g]=(counts[g]||0)+1);
@@ -352,6 +355,7 @@ function submit(){
 }
 function finish(status){
   S.status=status; S.finishedDay=todayNum();
+  if(!practice)track(status==="won"?"puzzle-won":"puzzle-lost");
   if(!practice&&cloud)cloud.markReferralPlayed();
 }
 $("useBonus").onclick=()=>{S.max=5;S.bonusUsed=true;save();closeSheets();render();toast("Bonus try used. One more shot")};
@@ -390,7 +394,7 @@ async function copyText(txt,okMsg){
     ta.remove();toast(ok?okMsg:"Couldn't copy here, screenshot it instead");
   }
 }
-function copyShare(){copyText(shareText()+(cloud?"\n"+cloud.inviteLink():"\n"+location.origin+location.pathname),"Copied. Paste it in the group chat")}
+function copyShare(){track("share-copied");copyText(shareText()+(cloud?"\n"+cloud.inviteLink():"\n"+location.origin+location.pathname),"Copied. Paste it in the group chat")}
 
 function renderAcctBtn(){
   const b=$("acctBtn");
@@ -492,6 +496,7 @@ if(FIREBASE_CONFIG){
         markReferralPlayed:()=>{if(refPending){refPending=false;F.updateDoc(rRef,{played:true}).catch(()=>{})}},
         signOut:()=>{Au.signOut(auth);closeSheets()}
       };
+      if(!store.get("linkage-signin-tracked",false)){store.set("linkage-signin-tracked",true);track("signed-in")}
       if(Object.keys(days).some(k=>k[0]!=="x"&&days[k].status!=="playing"&&days[k].finishedDay===+k))cloud.markReferralPlayed();
       load(num,practice);
       if($("acctSheet").classList.contains("on"))renderAcct();
