@@ -101,6 +101,9 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
 .acct-link{font-family:var(--mono);font-size:12px;background:var(--card);padding:10px;border-radius:8px;overflow-wrap:anywhere;margin:8px 0}
 .practice button{background:none;border:1px solid #fff;color:#fff;border-radius:999px;padding:3px 10px;font:600 12px var(--body);cursor:pointer}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+.tabs{display:flex;gap:6px}
+.tab{text-decoration:none;color:var(--muted);border:1.5px solid var(--line);border-radius:999px;padding:6px 14px;font:600 13px var(--body)}
+.tab.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 </style>
 </head>
 <body>
@@ -120,6 +123,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
       <div class="meta" id="meta"></div>
     </div>
   </header>
+  <nav class="tabs" aria-label="Games"><a class="tab on" href="/" aria-current="page">Connections</a><a class="tab" href="/mini/">Mini</a></nav>
   <div id="practice"></div>
   <p class="prompt" id="prompt">Make four groups of four.</p>
   <div class="board" id="board" role="group" aria-label="Puzzle tiles"></div>

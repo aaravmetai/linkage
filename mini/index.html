@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Linkage Mini</title>
+<meta name="description" content="A free daily MCAT mini crossword. Five clues, about two minutes, a good study break.">
+<meta property="og:title" content="Linkage Mini">
+<meta property="og:description" content="The daily MCAT mini crossword. A new one every midnight.">
+<meta property="og:url" content="https://playlinkage.com/mini">
+<meta name="theme-color" content="#f3f4f1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f3f4f1; --card:#e4e6e0; --ink:#17202b; --muted:#5d6672; --line:#c9cdc5; --accent:#c8402f;
+  --hi:#f1cf63; --hi2:#f8e7a8; --bad:#e9a89f; --good:#9cc58a; --black:#17202b;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{--paper:#12171d; --card:#222a33; --ink:#e9ece6; --muted:#98a2ad; --line:#323c47; --accent:#ec6a55;
+    --hi:#d9b84c; --hi2:#5a5330; --bad:#7a3d36; --good:#4f7a42; --black:#0a0d11; color-scheme:dark}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:540px;margin:0 auto;padding:16px 16px 110px;display:flex;flex-direction:column;gap:14px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+.brand h1{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.03em;margin:0;line-height:1}
+.brand h1 span{color:var(--accent)}
+.brand p{margin:4px 0 0;font-size:13px;color:var(--muted)}
+.hright{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.icons{display:flex;gap:6px}
+.iconbtn{background:none;border:1.5px solid var(--line);color:var(--ink);border-radius:999px;height:34px;min-width:34px;padding:0 10px;font:600 13px var(--body);cursor:pointer}
+.iconbtn:hover{border-color:var(--ink)}
+.meta{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right;line-height:1.5}
+.tabs{display:flex;gap:6px}
+.tab{text-decoration:none;color:var(--muted);border:1.5px solid var(--line);border-radius:999px;padding:6px 14px;font:600 13px var(--body)}
+.tab.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+@media (max-width:500px){
+  header{flex-wrap:wrap;row-gap:8px}
+  .brand{width:100%}
+  .hright{width:100%;flex-direction:row-reverse;justify-content:space-between;align-items:center}
+}
+.clue{background:var(--card);border-radius:10px;padding:10px 14px;min-height:56px;display:flex;gap:10px;align-items:center;font-size:15px;line-height:1.35}
+.clue b{font-family:var(--display);font-weight:800;white-space:nowrap}
+.timer{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;width:min(100%,340px);margin:0 auto;touch-action:manipulation}
+.cell{position:relative;aspect-ratio:1;border-radius:6px;background:var(--card);border:none;padding:0;display:flex;align-items:center;justify-content:center;
+  font:800 clamp(22px,7vw,30px) var(--display);color:var(--ink);cursor:pointer;text-transform:uppercase}
+.cell.blk{background:transparent;cursor:default;pointer-events:none}
+.cell .num{position:absolute;left:4px;top:2px;font:600 10px var(--body);color:var(--muted)}
+.cell.in{background:var(--hi2)}
+.cell.sel{background:var(--hi)}
+.cell.sel,.cell.in{color:#17202b}
+.cell.bad{background:var(--bad)}
+.cell.ok{background:var(--good);color:#17202b}
+.cell:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.lists{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lists h4{font:800 13px var(--display);letter-spacing:.06em;text-transform:uppercase;margin:0 0 6px;color:var(--muted)}
+.lists button{display:block;width:100%;text-align:left;background:none;border:none;border-radius:8px;padding:7px 8px;font:400 13.5px/1.35 var(--body);color:var(--ink);cursor:pointer}
+.lists button b{font-weight:600;margin-right:4px}
+.lists button.on{background:var(--hi2);color:#17202b}
+.lists button.done{opacity:.55}
+.controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.btn{border:1.5px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:11px 18px;font:600 14px var(--body);cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn:disabled{opacity:.4;cursor:default}
+.kb{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;align-items:center;z-index:5}
+.kb div{display:flex;gap:5px;justify-content:center;width:100%}
+.kb button{flex:1;max-width:38px;height:44px;border:none;border-radius:7px;background:var(--card);color:var(--ink);font:600 16px var(--body);cursor:pointer;padding:0}
+.kb button.wide{max-width:60px;font-size:14px}
+.kb button:active{transform:scale(.94)}
+.result{background:var(--card);border-radius:12px;padding:16px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.result h2{font-family:var(--display);font-weight:800;font-size:24px;margin:0}
+.result p{margin:0;font-size:14px;color:var(--muted)}
+.stats{display:flex;gap:22px;justify-content:center}
+.stats div b{display:block;font:800 22px var(--display)}
+.stats div span{font-size:11.5px;color:var(--muted)}
+.toast{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:8px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+.sheet{position:fixed;inset:0;background:rgba(10,14,18,.5);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.sheet.on{display:flex}
+.panel{background:var(--paper);color:var(--ink);width:100%;max-width:540px;border-radius:16px 16px 0 0;padding:20px 18px 40px;max-height:85%;overflow:auto}
+.panel h3{font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 10px}
+.panel p,.panel li{font-size:14.5px;line-height:1.5}
+.panel ul{padding-left:18px}
+.past{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:none;border-bottom:1px solid var(--line);padding:11px 2px;font:500 14.5px var(--body);color:var(--ink);cursor:pointer;text-align:left}
+.past small{color:var(--muted);font-family:var(--mono)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>Link<span>age</span> Mini</h1>
+      <p>The daily MCAT mini crossword</p>
+    </div>
+    <div class="hright">
+      <div class="icons">
+        <button class="iconbtn" id="helpBtn" aria-label="How to play">?</button>
+        <button class="iconbtn" id="archBtn">Past</button>
+      </div>
+      <div class="meta" id="meta"></div>
+    </div>
+  </header>
+  <nav class="tabs" aria-label="Games"><a class="tab" href="/">Connections</a><a class="tab on" href="/mini/" aria-current="page">Mini</a></nav>
+  <div class="clue" id="clue"><b id="clueNum"></b><span id="clueText"></span><span class="timer" id="timer"></span></div>
+  <div class="grid" id="grid" role="grid" aria-label="Crossword grid"></div>
+  <div class="lists" id="lists"></div>
+  <div class="controls" id="controls">
+    <button class="btn" id="checkBtn">Check</button>
+    <button class="btn" id="revealBtn">Reveal</button>
+  </div>
+  <div id="resultBox"></div>
+</div>
+<div class="kb" id="kb" aria-label="Keyboard"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sheet" id="helpSheet"><div class="panel">
+  <h3>How to play</h3>
+  <ul>
+    <li>Tap a square, then type. Tap it again to switch between across and down.</li>
+    <li>Every answer has five letters and every clue is MCAT content.</li>
+    <li>Check marks wrong letters in red. Revealing ends the run and does not count toward your streak.</li>
+    <li>A new mini unlocks every midnight. Finish on its own day to keep your streak.</li>
+  </ul>
+  <div class="controls"><button class="btn primary" data-close>Got it</button></div>
+</div></div>
+<div class="sheet" id="archSheet"><div class="panel"><h3>Past minis</h3><div id="archList"></div></div></div>
+<script>
+const XW = [{"w": ["OVARY", "TRAIT", "OCTET", "AORTA", "YEAST"], "c": ["Organ that releases eggs", "Enduring personality characteristic", "Eight valence electrons", "Largest artery in the body", "Single-celled fungus used in fermentation"]}, {"w": ["VIRUS", "SOLID", "VOLTS", "RENAL", "SOUND"], "c": ["Acellular particle that needs a host to replicate", "State with fixed shape and volume", "Units of electric potential", "Relating to the kidney", "Longitudinal wave in air"]}, {"w": ["ANVIL", "LYSIS", "ALKYL", "VAGUS", "LEWIS"], "c": ["Ossicle shaped like a smith's block", "Cell bursting", "Saturated carbon substituent", "Tenth cranial nerve", "Acid that accepts an electron pair"]}, {"w": ["ANVIL", "LASER", "ALDOL", "VAGUS", "LIVER"], "c": ["Ossicle shaped like a smith's block", "Source of coherent light", "Reaction that joins two carbonyl compounds", "Tenth cranial nerve", "Organ that makes bile"]}, {"w": ["STATE", "STAGE", "SALTS", "ALPHA", "ELUTE"], "c": ["Solid, liquid or gas", "Piaget described four of these", "Ionic products of neutralization", "Helix type stabilized by hydrogen bonds along the backbone", "Wash a compound off a chromatography column"]}, {"w": ["ALPHA", "SALTS", "ACIDS", "PUPIL", "ATOMS"], "c": ["Helix type stabilized by hydrogen bonds along the backbone", "Ionic products of neutralization", "Proton donors", "Opening that lets light into the eye", "Smallest units of an element"]}, {"w": ["CILIA", "NODES", "CODON", "LIPID", "ATOMS"], "c": ["Hair-like projections that sweep mucus", "Points of zero displacement in a standing wave", "Three nucleotide unit read by a tRNA anticodon", "Fat, oil or steroid, broadly", "Smallest units of an element"]}, {"w": ["ROLES", "LASER", "RENAL", "LEWIS", "SUGAR"], "c": ["Expected behaviors tied to a social position", "Source of coherent light", "Relating to the kidney", "Acid that accepts an electron pair", "Simple carbohydrate"]}, {"w": ["HABIT", "TESLA", "HEART", "BEATS", "THETA"], "c": ["Learned automatic behavior", "Unit of magnetic field strength", "Organ with four chambers", "Pulsing caused by two close frequencies", "Brain waves seen in light sleep"]}, {"w": ["DIODE", "MOTOR", "DREAM", "OCTET", "ESTER"], "c": ["One way circuit element", "Type of neuron that signals muscles", "Vivid imagery during REM", "Eight valence electrons", "Product of an acid and an alcohol"]}, {"w": ["FREUD", "SERUM", "FOCUS", "ETHER", "DREAM"], "c": ["Father of psychoanalysis", "Blood fluid left after clotting", "Point where parallel rays converge", "R-O-R compound", "Vivid imagery during REM"]}, {"w": ["CELLS", "NORMS", "CODON", "LIVER", "SALTS"], "c": ["Basic units of life", "Shared rules of acceptable behavior", "Three nucleotide unit read by a tRNA anticodon", "Organ that makes bile", "Ionic products of neutralization"]}, {"w": ["NODES", "STATE", "NORMS", "DELTA", "STAGE"], "c": ["Points of zero displacement in a standing wave", "Solid, liquid or gas", "Shared rules of acceptable behavior", "Slow waves of deep sleep", "Piaget described four of these"]}, {"w": ["ALDOL", "YEAST", "ASSAY", "DELTA", "LIGHT"], "c": ["Reaction that joins two carbonyl compounds", "Single-celled fungus used in fermentation", "Lab test that measures a substance", "Slow waves of deep sleep", "Visible electromagnetic radiation"]}, {"w": ["ALGAE", "AMINE", "ATRIA", "GOLGI", "ELUTE"], "c": ["Photosynthetic aquatic eukaryotes", "Organic base containing nitrogen", "Upper chambers of the heart", "Organelle that modifies and ships proteins", "Wash a compound off a chromatography column"]}, {"w": ["POWER", "LYSIS", "PUPIL", "WAVES", "ROLES"], "c": ["Work done per unit time", "Cell bursting", "Opening that lets light into the eye", "Disturbances that carry energy", "Expected behaviors tied to a social position"]}, {"w": ["CILIA", "NORMS", "COLON", "LIVER", "ACIDS"], "c": ["Hair-like projections that sweep mucus", "Shared rules of acceptable behavior", "Part of the large intestine that absorbs water", "Organ that makes bile", "Proton donors"]}, {"w": ["PHASE", "LASER", "PUPIL", "ATOMS", "ETHER"], "c": ["Offset between two waves, or a state of matter", "Source of coherent light", "Opening that lets light into the eye", "Smallest units of an element", "R-O-R compound"]}, {"w": ["AMINO", "SEMEN", "ACIDS", "ILEUM", "ORGAN"], "c": ["___ acid, a protein building block", "Fluid that carries sperm", "Proton donors", "Last section of the small intestine", "Group of tissues working toward one function"]}, {"w": ["LIGHT", "HEART", "LYMPH", "GAMMA", "TRAIT"], "c": ["Visible electromagnetic radiation", "Organ with four chambers", "Fluid carried by lacteals", "Most energetic type of nuclear radiation", "Enduring personality characteristic"]}, {"w": ["TESLA", "ALDOL", "THETA", "SOUND", "ANVIL"], "c": ["Unit of magnetic field strength", "Reaction that joins two carbonyl compounds", "Brain waves seen in light sleep", "Longitudinal wave in air", "Ossicle shaped like a smith's block"]}, {"w": ["PHASE", "MOLAR", "PRISM", "ALKYL", "ESTER"], "c": ["Offset between two waves, or a state of matter", "Moles per liter", "Splits white light into colors", "Saturated carbon substituent", "Product of an acid and an alcohol"]}, {"w": ["GLAND", "STATE", "GENES", "ALPHA", "DRIVE"], "c": ["Organ that secretes hormones", "Solid, liquid or gas", "Units of heredity", "Helix type stabilized by hydrogen bonds along the backbone", "Internal push to satisfy a need"]}, {"w": ["PRIME", "MOLAR", "PRISM", "IDEAL", "ETHER"], "c": ["Earlier stimulus that biases a later response", "Moles per liter", "Splits white light into colors", "___ self, the person you want to be", "R-O-R compound"]}, {"w": ["FOCUS", "DREAM", "FARAD", "CASTE", "SERUM"], "c": ["Point where parallel rays converge", "Vivid imagery during REM", "Unit of capacitance", "Rigid hereditary class system", "Blood fluid left after clotting"]}, {"w": ["GLIAL", "SOLID", "GASES", "IDEAL", "LIPID"], "c": ["___ cells support neurons", "State with fixed shape and volume", "Particles that fill their container", "___ self, the person you want to be", "Fat, oil or steroid, broadly"]}, {"w": ["CLASS", "ILEUM", "COCCI", "AMIDE", "SERUM"], "c": ["Social stratification category", "Last section of the small intestine", "Spherical bacteria", "Functional group in a peptide bond", "Blood fluid left after clotting"]}, {"w": ["ORGAN", "CELLS", "OPTIC", "GLIAL", "NODES"], "c": ["Group of tissues working toward one function", "Basic units of life", "___ nerve, which carries vision to the brain", "___ cells support neurons", "Points of zero displacement in a standing wave"]}, {"w": ["BEATS", "STAGE", "BONDS", "AORTA", "SPORE"], "c": ["Pulsing caused by two close frequencies", "Piaget described four of these", "Links between atoms", "Largest artery in the body", "Dormant survival structure of bacteria and fungi"]}, {"w": ["FOCUS", "DRIVE", "FREUD", "COCCI", "SPORE"], "c": ["Point where parallel rays converge", "Internal push to satisfy a need", "Father of psychoanalysis", "Spherical bacteria", "Dormant survival structure of bacteria and fungi"]}];
+const EPOCH = new Date(2026,10,12); // mini #1 = Nov 12, 2026, same numbering as Linkage
+const $ = id => document.getElementById(id);
+function track(name){try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:name,title:name,event:true})}catch(e){}}
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function dayNumOf(date){const t=new Date(date.getFullYear(),date.getMonth(),date.getDate());return Math.round((t-EPOCH)/86400000)+1}
+const TODAY=Math.max(1,dayNumOf(new Date()));
+function dateOf(n){const d=new Date(EPOCH);d.setDate(d.getDate()+n-1);return d}
+function fmtDate(n,o={month:"short",day:"numeric"}){return dateOf(n).toLocaleDateString("en-US",o)}
+function fmtTime(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+
+// Layout is fixed: three across words on rows 0, 2, 4 and two down words on columns 0 and 4.
+// w = [down col 0, down col 4, across row 0, across row 2, across row 4]
+const WHITE=(r,c)=>r%2===0||c===0||c===4;
+function build(p){
+  const sol=Array.from({length:5},()=>Array(5).fill(null));
+  for(let i=0;i<5;i++){sol[i][0]=p.w[0][i];sol[i][4]=p.w[1][i]}
+  for(let k=0;k<3;k++)for(let c=0;c<5;c++)sol[2*k][c]=p.w[2+k][c];
+  const ents=[];
+  const startsA=(r,c)=>WHITE(r,c)&&(c===0||!WHITE(r,c-1))&&c<4&&WHITE(r,c+1);
+  const startsD=(r,c)=>WHITE(r,c)&&(r===0||!WHITE(r-1,c))&&r<4&&WHITE(r+1,c);
+  let n=0;const nums={};
+  for(let r=0;r<5;r++)for(let c=0;c<5;c++){
+    const a=startsA(r,c),d=startsD(r,c);
+    if(a||d){n++;nums[r+","+c]=n}
+    if(a){const cells=[];for(let x=c;x<5&&WHITE(r,x);x++)cells.push([r,x]);ents.push({dir:"A",n,cells,clue:p.c[2+r/2]})}
+    if(d){const cells=[];for(let y=r;y<5&&WHITE(y,c);y++)cells.push([y,c]);ents.push({dir:"D",n,cells,clue:p.c[c===0?0:1]})}
+  }
+  return{sol,ents,nums};
+}
+
+let days=store.get("linkage-mini-days",{});
+let num,P,B,S,sel,dir,wrong=new Set(),tick=null,practice=false;
+const key=n=>String(n);
+function blank(){return{g:Array(25).fill(""),t:0,checks:0,status:"playing",started:false}}
+function computeStats(){
+  let played=0,wins=0,max=0,run=0;
+  const won=n=>{const d=days[n];return d&&d.status==="won"&&d.finishedDay===n};
+  for(let n=1;n<=TODAY;n++){const d=days[n];if(d&&d.status!=="playing"&&d.finishedDay===n){played++;if(d.status==="won")wins++}if(won(n)){run++;max=Math.max(max,run)}else run=0}
+  let streak=0,n=TODAY;
+  if(!won(TODAY)){if(days[TODAY]&&days[TODAY].status!=="playing")return{played,wins,streak:0,max};n=TODAY-1}
+  while(n>=1&&won(n)){streak++;n--}
+  return{played,wins,streak,max};
+}
+function save(){days[key(num)]=S;store.set("linkage-mini-days",days)}
+function load(n){
+  if(n>TODAY)n=TODAY;
+  num=n;practice=n!==TODAY;P=XW[(n-1)%XW.length];B=build(P);
+  S=days[key(n)]||blank();wrong=new Set();
+  const first=B.ents[0].cells[0];sel=first;dir="A";
+  drawGrid();render();startTimer();
+}
+const idx=(r,c)=>r*5+c;
+function entryAt(r,c,d){return B.ents.find(e=>e.dir===d&&e.cells.some(x=>x[0]===r&&x[1]===c))}
+function curEntry(){return entryAt(sel[0],sel[1],dir)||entryAt(sel[0],sel[1],dir==="A"?"D":"A")}
+function drawGrid(){
+  const g=$("grid");g.innerHTML="";
+  for(let r=0;r<5;r++)for(let c=0;c<5;c++){
+    const b=document.createElement("button");b.className="cell";b.type="button";
+    if(!WHITE(r,c)){b.classList.add("blk");b.tabIndex=-1;b.setAttribute("aria-hidden","true")}
+    else{
+      b.dataset.r=r;b.dataset.c=c;
+      const nn=B.nums[r+","+c];if(nn){const s=document.createElement("span");s.className="num";s.textContent=nn;b.appendChild(s)}
+      const t=document.createElement("span");t.className="ch";b.appendChild(t);
+      b.onclick=()=>tapCell(r,c);
+    }
+    g.appendChild(b);
+  }
+  $("lists").innerHTML=["A","D"].map(d=>'<div><h4>'+(d==="A"?"Across":"Down")+'</h4>'+B.ents.filter(e=>e.dir===d).map(e=>'<button type="button" data-n="'+e.n+'" data-d="'+d+'"><b>'+e.n+'</b>'+e.clue.replace(/&/g,"&amp;").replace(/</g,"&lt;")+'</button>').join("")+'</div>').join("");
+  $("lists").querySelectorAll("button").forEach(b=>b.onclick=()=>{const e=B.ents.find(x=>x.n==b.dataset.n&&x.dir===b.dataset.d);dir=e.dir;sel=e.cells.find(c=>!S.g[idx(c[0],c[1])])||e.cells[0];render()});
+}
+function tapCell(r,c){
+  if(S.status!=="playing")return;
+  if(sel[0]===r&&sel[1]===c){const other=dir==="A"?"D":"A";if(entryAt(r,c,other))dir=other}
+  else{sel=[r,c];if(!entryAt(r,c,dir))dir=dir==="A"?"D":"A"}
+  render();
+}
+function render(){
+  const e=curEntry(),inW=new Set(e?e.cells.map(x=>idx(x[0],x[1])):[]);
+  $("grid").querySelectorAll(".cell").forEach(b=>{
+    if(b.classList.contains("blk"))return;
+    const r=+b.dataset.r,c=+b.dataset.c,i=idx(r,c);
+    b.querySelector(".ch").textContent=S.g[i]||"";
+    b.classList.toggle("sel",S.status==="playing"&&r===sel[0]&&c===sel[1]);
+    b.classList.toggle("in",S.status==="playing"&&inW.has(i)&&!(r===sel[0]&&c===sel[1]));
+    b.classList.toggle("bad",wrong.has(i));
+    b.classList.toggle("ok",S.status==="won");
+    b.setAttribute("aria-label",(B.nums[r+","+c]?"clue "+B.nums[r+","+c]+", ":"")+"row "+(r+1)+" column "+(c+1)+", "+(S.g[i]||"empty"));
+  });
+  if(e){$("clueNum").textContent=e.n+(e.dir==="A"?" Across":" Down");$("clueText").textContent=e.clue}
+  $("lists").querySelectorAll("button").forEach(b=>{
+    const en=B.ents.find(x=>x.n==b.dataset.n&&x.dir===b.dataset.d);
+    b.classList.toggle("on",!!e&&en===e);
+    b.classList.toggle("done",en.cells.every(c=>S.g[idx(c[0],c[1])]));
+  });
+  $("meta").textContent="#"+num+" · "+fmtDate(num,{weekday:"short",month:"short",day:"numeric"})+(practice?" · past":"");
+  const playing=S.status==="playing";
+  $("controls").style.display=playing?"":"none";
+  $("kb").style.display=playing?"":"none";
+  $("timer").textContent=fmtTime(S.t);
+  renderResult();
+}
+function renderResult(){
+  const box=$("resultBox");
+  if(S.status==="playing"){box.innerHTML="";return}
+  const st=computeStats(),won=S.status==="won";
+  box.innerHTML='<div class="result"><h2>'+(won?"Solved in "+fmtTime(S.t):"Answers revealed")+'</h2>'+
+   '<p>'+(won?(S.checks?S.checks+" check"+(S.checks>1?"s":"")+" used":"No checks used"):"Revealed puzzles do not count toward your streak.")+'</p>'+
+   '<div class="stats"><div><b>'+st.streak+'</b><span>streak</span></div><div><b>'+st.max+'</b><span>best</span></div><div><b>'+st.wins+'</b><span>solved</span></div></div>'+
+   (won?'<button class="btn primary" id="shareBtn">Share</button>':'')+
+   '<a class="btn" href="/" style="text-decoration:none">Play Connections</a></div>';
+  if($("shareBtn"))$("shareBtn").onclick=share;
+}
+function shareText(){
+  const rows=[];for(let r=0;r<5;r++){let s="";for(let c=0;c<5;c++)s+=WHITE(r,c)?"🟩":"⬛";rows.push(s)}
+  return "Linkage Mini #"+num+" · "+fmtDate(num)+"\n⏱ "+fmtTime(S.t)+(S.checks?" · "+S.checks+" check"+(S.checks>1?"s":""):" · no checks")+"\n"+rows.join("\n")+"\nplaylinkage.com/mini";
+}
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("on"),1800)}
+async function share(){
+  const text=shareText();
+  try{
+    if(navigator.share&&/Mobi|Android|iPhone/i.test(navigator.userAgent)){await navigator.share({text});}
+    else{await navigator.clipboard.writeText(text);toast("Copied")}
+    track("mini-share-copied");
+  }catch(e){try{await navigator.clipboard.writeText(text);toast("Copied")}catch(_){toast("Could not copy")}}
+}
+function startTimer(){
+  clearInterval(tick);
+  tick=setInterval(()=>{if(S.status==="playing"&&S.started&&!document.hidden){S.t++;$("timer").textContent=fmtTime(S.t);if(S.t%5===0)save()}},1000);
+}
+function begin(){if(!S.started){S.started=true;if(!practice)track("mini-started")}}
+function move(step){
+  const e=curEntry();if(!e)return;
+  const i=e.cells.findIndex(c=>c[0]===sel[0]&&c[1]===sel[1]);
+  const j=i+step;if(j>=0&&j<e.cells.length)sel=e.cells[j];
+}
+function nextClue(back){
+  const list=B.ents,e=curEntry(),i=list.indexOf(e),n=list[(i+(back?-1:1)+list.length)%list.length];
+  dir=n.dir;sel=n.cells.find(c=>!S.g[idx(c[0],c[1])])||n.cells[0];
+}
+function typeLetter(ch){
+  if(S.status!=="playing")return;
+  begin();
+  const i=idx(sel[0],sel[1]);S.g[i]=ch;wrong.delete(i);
+  move(1);save();render();checkDone();
+}
+function backspace(){
+  if(S.status!=="playing")return;
+  const i=idx(sel[0],sel[1]);
+  if(S.g[i]){S.g[i]="";wrong.delete(i)}else{move(-1);const j=idx(sel[0],sel[1]);S.g[j]="";wrong.delete(j)}
+  save();render();
+}
+function allFilled(){for(let r=0;r<5;r++)for(let c=0;c<5;c++)if(WHITE(r,c)&&!S.g[idx(r,c)])return false;return true}
+function allCorrect(){for(let r=0;r<5;r++)for(let c=0;c<5;c++)if(WHITE(r,c)&&S.g[idx(r,c)]!==B.sol[r][c])return false;return true}
+function checkDone(){
+  if(!allFilled())return;
+  if(allCorrect()){
+    S.status="won";S.finishedDay=TODAY;save();wrong=new Set();
+    track("mini-won");render();
+    setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"}),150);
+  }else toast("All filled, but something is off. Try Check.");
+}
+$("checkBtn").onclick=()=>{
+  begin();S.checks++;wrong=new Set();
+  for(let r=0;r<5;r++)for(let c=0;c<5;c++){const i=idx(r,c);if(WHITE(r,c)&&S.g[i]&&S.g[i]!==B.sol[r][c])wrong.add(i)}
+  save();render();
+  toast(wrong.size?wrong.size+" wrong letter"+(wrong.size>1?"s":""):"Everything so far is right");
+};
+$("revealBtn").onclick=()=>{
+  if(!confirm("Reveal the answers? This will not count toward your streak."))return;
+  for(let r=0;r<5;r++)for(let c=0;c<5;c++)if(WHITE(r,c))S.g[idx(r,c)]=B.sol[r][c];
+  S.status="revealed";S.finishedDay=TODAY;save();wrong=new Set();track("mini-revealed");render();
+};
+// keyboards
+(function(){
+  const rows=["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"];
+  $("kb").innerHTML=rows.map((r,k)=>'<div>'+(k===2?'<button class="wide" data-k="NEXT" aria-label="Next clue">Next</button>':'')+[...r].map(ch=>'<button data-k="'+ch+'">'+ch+'</button>').join("")+(k===2?'<button class="wide" data-k="BACK" aria-label="Delete">⌫</button>':'')+'</div>').join("");
+  $("kb").addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;const k=b.dataset.k;if(k==="BACK")backspace();else if(k==="NEXT"){nextClue();render()}else typeLetter(k)});
+})();
+document.addEventListener("keydown",ev=>{
+  if(document.querySelector(".sheet.on")||ev.metaKey||ev.ctrlKey||ev.altKey||S.status!=="playing")return;
+  const k=ev.key;
+  if(/^[a-zA-Z]$/.test(k)){typeLetter(k.toUpperCase());ev.preventDefault()}
+  else if(k==="Backspace"){backspace();ev.preventDefault()}
+  else if(k==="Tab"||k==="Enter"){nextClue(ev.shiftKey);render();ev.preventDefault()}
+  else if(k===" "){const o=dir==="A"?"D":"A";if(entryAt(sel[0],sel[1],o)){dir=o;render()}ev.preventDefault()}
+  else if(k.startsWith("Arrow")){
+    const d={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[k];
+    let r=sel[0]+d[0],c=sel[1]+d[1];
+    while(r>=0&&r<5&&c>=0&&c<5&&!WHITE(r,c)){r+=d[0];c+=d[1]}
+    if(r>=0&&r<5&&c>=0&&c<5){sel=[r,c];if(!entryAt(r,c,dir))dir=dir==="A"?"D":"A";render()}
+    ev.preventDefault();
+  }
+});
+// sheets
+function openSheet(id){$(id).classList.add("on")}
+function closeSheets(){document.querySelectorAll(".sheet").forEach(s=>s.classList.remove("on"))}
+document.querySelectorAll(".sheet").forEach(s=>s.addEventListener("click",e=>{if(e.target===s||e.target.closest("[data-close]"))closeSheets()}));
+$("helpBtn").onclick=()=>openSheet("helpSheet");
+$("archBtn").onclick=()=>{
+  let h="";
+  for(let n=TODAY;n>=1;n--){const d=days[n];const m=d?(d.status==="won"?"✓ "+fmtTime(d.t):d.status==="revealed"?"revealed":"in progress"):"";
+    h+='<button class="past" data-n="'+n+'"><span>#'+n+' · '+fmtDate(n,{weekday:"short",month:"short",day:"numeric"})+'</span><small>'+m+'</small></button>'}
+  $("archList").innerHTML=h;
+  $("archList").querySelectorAll("button").forEach(b=>b.onclick=()=>{closeSheets();load(+b.dataset.n);window.scrollTo(0,0)});
+  openSheet("archSheet");
+};
+document.addEventListener("visibilitychange",()=>{if(document.hidden)save()});
+window.addEventListener("pagehide",save);
+load(TODAY);
+if(!store.get("linkage-mini-seen",false)){store.set("linkage-mini-seen",true);openSheet("helpSheet")}
+</script>
+<script data-goatcounter="https://playlinkage.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
