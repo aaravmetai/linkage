@@ -93,6 +93,9 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
 .panel h3{font-family:var(--display);font-weight:800;font-size:22px;margin:0 0 10px}
 .panel p,.panel li{font-size:14.5px;line-height:1.5}
 .panel ul{padding-left:18px}
+.nudge{border:1.5px dashed var(--line);border-radius:10px;padding:12px 14px;width:100%;display:flex;flex-direction:column;gap:8px;align-items:center;background:var(--paper)}
+.nudge p{margin:0;font-size:13.5px;color:var(--muted);text-align:center}
+.skip{background:none;border:none;color:var(--muted);font:500 12.5px var(--body);text-decoration:underline;cursor:pointer}
 .past{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:none;border-bottom:1px solid var(--line);padding:11px 2px;font:500 14.5px var(--body);color:var(--ink);cursor:pointer;text-align:left}
 .past small{color:var(--muted);font-family:var(--mono)}
 </style>
@@ -108,6 +111,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
       <div class="icons">
         <button class="iconbtn" id="helpBtn" aria-label="How to play">?</button>
         <button class="iconbtn" id="archBtn">Past</button>
+        <button class="iconbtn" id="acctBtn" hidden>Sign in</button>
       </div>
       <div class="meta" id="meta"></div>
     </div>
@@ -135,8 +139,17 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
   <div class="controls"><button class="btn primary" data-close>Got it</button></div>
 </div></div>
 <div class="sheet center" id="wrongSheet"><div class="panel"><h3>Something is not right</h3><p>Every square is filled, but at least one letter is wrong. The timer is paused until you hit OK.</p><div class="controls"><button class="btn primary" id="wrongOk" data-close>OK</button></div></div></div>
+<div class="sheet" id="acctSheet"><div class="panel" id="acctPanel"></div></div>
 <div class="sheet" id="archSheet"><div class="panel"><h3>Past minis</h3><div id="archList"></div></div></div>
 <script>
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBB1CCEDbGYzGVdZG0H_OsCFEGavVHvx6E",
+  authDomain: "linkage-ef65a.firebaseapp.com",
+  projectId: "linkage-ef65a",
+  storageBucket: "linkage-ef65a.firebasestorage.app",
+  messagingSenderId: "248717274523",
+  appId: "1:248717274523:web:336a2224f3c8c2a45f053e"
+};
 const XW = [{"w": ["OVARY", "TRAIT", "OCTET", "AORTA", "YEAST"], "c": ["Organ that releases eggs", "Enduring personality characteristic", "Eight valence electrons", "Largest artery in the body", "Single-celled fungus used in fermentation"]}, {"w": ["VIRUS", "SOLID", "VOLTS", "RENAL", "SOUND"], "c": ["Acellular particle that needs a host to replicate", "State with fixed shape and volume", "Units of electric potential", "Relating to the kidney", "Longitudinal wave in air"]}, {"w": ["ANVIL", "LYSIS", "ALKYL", "VAGUS", "LEWIS"], "c": ["Ossicle shaped like a smith's block", "Cell bursting", "Saturated carbon substituent", "Tenth cranial nerve", "Acid that accepts an electron pair"]}, {"w": ["ANVIL", "LASER", "ALDOL", "VAGUS", "LIVER"], "c": ["Ossicle shaped like a smith's block", "Source of coherent light", "Reaction that joins two carbonyl compounds", "Tenth cranial nerve", "Organ that makes bile"]}, {"w": ["STATE", "STAGE", "SALTS", "ALPHA", "ELUTE"], "c": ["Solid, liquid or gas", "Piaget described four of these", "Ionic products of neutralization", "Helix type stabilized by hydrogen bonds along the backbone", "Wash a compound off a chromatography column"]}, {"w": ["ALPHA", "SALTS", "ACIDS", "PUPIL", "ATOMS"], "c": ["Helix type stabilized by hydrogen bonds along the backbone", "Ionic products of neutralization", "Proton donors", "Opening that lets light into the eye", "Smallest units of an element"]}, {"w": ["CILIA", "NODES", "CODON", "LIPID", "ATOMS"], "c": ["Hair-like projections that sweep mucus", "Points of zero displacement in a standing wave", "Three nucleotide unit read by a tRNA anticodon", "Fat, oil or steroid, broadly", "Smallest units of an element"]}, {"w": ["ROLES", "LASER", "RENAL", "LEWIS", "SUGAR"], "c": ["Expected behaviors tied to a social position", "Source of coherent light", "Relating to the kidney", "Acid that accepts an electron pair", "Simple carbohydrate"]}, {"w": ["HABIT", "TESLA", "HEART", "BEATS", "THETA"], "c": ["Learned automatic behavior", "Unit of magnetic field strength", "Organ with four chambers", "Pulsing caused by two close frequencies", "Brain waves seen in light sleep"]}, {"w": ["DIODE", "MOTOR", "DREAM", "OCTET", "ESTER"], "c": ["One way circuit element", "Type of neuron that signals muscles", "Vivid imagery during REM", "Eight valence electrons", "Product of an acid and an alcohol"]}, {"w": ["FREUD", "SERUM", "FOCUS", "ETHER", "DREAM"], "c": ["Father of psychoanalysis", "Blood fluid left after clotting", "Point where parallel rays converge", "R-O-R compound", "Vivid imagery during REM"]}, {"w": ["CELLS", "NORMS", "CODON", "LIVER", "SALTS"], "c": ["Basic units of life", "Shared rules of acceptable behavior", "Three nucleotide unit read by a tRNA anticodon", "Organ that makes bile", "Ionic products of neutralization"]}, {"w": ["NODES", "STATE", "NORMS", "DELTA", "STAGE"], "c": ["Points of zero displacement in a standing wave", "Solid, liquid or gas", "Shared rules of acceptable behavior", "Slow waves of deep sleep", "Piaget described four of these"]}, {"w": ["ALDOL", "YEAST", "ASSAY", "DELTA", "LIGHT"], "c": ["Reaction that joins two carbonyl compounds", "Single-celled fungus used in fermentation", "Lab test that measures a substance", "Slow waves of deep sleep", "Visible electromagnetic radiation"]}, {"w": ["ALGAE", "AMINE", "ATRIA", "GOLGI", "ELUTE"], "c": ["Photosynthetic aquatic eukaryotes", "Organic base containing nitrogen", "Upper chambers of the heart", "Organelle that modifies and ships proteins", "Wash a compound off a chromatography column"]}, {"w": ["POWER", "LYSIS", "PUPIL", "WAVES", "ROLES"], "c": ["Work done per unit time", "Cell bursting", "Opening that lets light into the eye", "Disturbances that carry energy", "Expected behaviors tied to a social position"]}, {"w": ["CILIA", "NORMS", "COLON", "LIVER", "ACIDS"], "c": ["Hair-like projections that sweep mucus", "Shared rules of acceptable behavior", "Part of the large intestine that absorbs water", "Organ that makes bile", "Proton donors"]}, {"w": ["PHASE", "LASER", "PUPIL", "ATOMS", "ETHER"], "c": ["Offset between two waves, or a state of matter", "Source of coherent light", "Opening that lets light into the eye", "Smallest units of an element", "R-O-R compound"]}, {"w": ["AMINO", "SEMEN", "ACIDS", "ILEUM", "ORGAN"], "c": ["___ acid, a protein building block", "Fluid that carries sperm", "Proton donors", "Last section of the small intestine", "Group of tissues working toward one function"]}, {"w": ["LIGHT", "HEART", "LYMPH", "GAMMA", "TRAIT"], "c": ["Visible electromagnetic radiation", "Organ with four chambers", "Fluid carried by lacteals", "Most energetic type of nuclear radiation", "Enduring personality characteristic"]}, {"w": ["TESLA", "ALDOL", "THETA", "SOUND", "ANVIL"], "c": ["Unit of magnetic field strength", "Reaction that joins two carbonyl compounds", "Brain waves seen in light sleep", "Longitudinal wave in air", "Ossicle shaped like a smith's block"]}, {"w": ["PHASE", "MOLAR", "PRISM", "ALKYL", "ESTER"], "c": ["Offset between two waves, or a state of matter", "Moles per liter", "Splits white light into colors", "Saturated carbon substituent", "Product of an acid and an alcohol"]}, {"w": ["GLAND", "STATE", "GENES", "ALPHA", "DRIVE"], "c": ["Organ that secretes hormones", "Solid, liquid or gas", "Units of heredity", "Helix type stabilized by hydrogen bonds along the backbone", "Internal push to satisfy a need"]}, {"w": ["PRIME", "MOLAR", "PRISM", "IDEAL", "ETHER"], "c": ["Earlier stimulus that biases a later response", "Moles per liter", "Splits white light into colors", "___ self, the person you want to be", "R-O-R compound"]}, {"w": ["FOCUS", "DREAM", "FARAD", "CASTE", "SERUM"], "c": ["Point where parallel rays converge", "Vivid imagery during REM", "Unit of capacitance", "Rigid hereditary class system", "Blood fluid left after clotting"]}, {"w": ["GLIAL", "SOLID", "GASES", "IDEAL", "LIPID"], "c": ["___ cells support neurons", "State with fixed shape and volume", "Particles that fill their container", "___ self, the person you want to be", "Fat, oil or steroid, broadly"]}, {"w": ["CLASS", "ILEUM", "COCCI", "AMIDE", "SERUM"], "c": ["Social stratification category", "Last section of the small intestine", "Spherical bacteria", "Functional group in a peptide bond", "Blood fluid left after clotting"]}, {"w": ["ORGAN", "CELLS", "OPTIC", "GLIAL", "NODES"], "c": ["Group of tissues working toward one function", "Basic units of life", "___ nerve, which carries vision to the brain", "___ cells support neurons", "Points of zero displacement in a standing wave"]}, {"w": ["BEATS", "STAGE", "BONDS", "AORTA", "SPORE"], "c": ["Pulsing caused by two close frequencies", "Piaget described four of these", "Links between atoms", "Largest artery in the body", "Dormant survival structure of bacteria and fungi"]}, {"w": ["FOCUS", "DRIVE", "FREUD", "COCCI", "SPORE"], "c": ["Point where parallel rays converge", "Internal push to satisfy a need", "Father of psychoanalysis", "Spherical bacteria", "Dormant survival structure of bacteria and fungi"]}];
 const EPOCH = new Date(2026,10,12); // mini #1 = Nov 12, 2026, same numbering as Linkage
 const $ = id => document.getElementById(id);
@@ -169,6 +182,10 @@ function build(p){
 }
 
 let days=store.get("linkage-mini-days",{});
+let cloud=null;
+let signIn=()=>toast("Sign-in isn't set up yet");
+const dirty=new Set();let cloudTimer=null;
+function cloudSaveSoon(){if(!cloud)return;dirty.add(key(num));clearTimeout(cloudTimer);cloudTimer=setTimeout(()=>cloud&&cloud.push(),S.status==="playing"?4000:0)}
 let num,P,B,S,sel,dir,wrong=new Set(),tick=null,practice=false;
 const key=n=>String(n);
 function blank(){return{g:Array(25).fill(""),t:0,checks:0,status:"playing",started:false}}
@@ -181,7 +198,7 @@ function computeStats(){
   while(n>=1&&won(n)){streak++;n--}
   return{played,wins,streak,max};
 }
-function save(){days[key(num)]=S;store.set("linkage-mini-days",days)}
+function save(){days[key(num)]=S;store.set("linkage-mini-days",days);cloudSaveSoon()}
 function load(n){
   if(n>TODAY)n=TODAY;
   num=n;practice=n!==TODAY;P=XW[(n-1)%XW.length];B=build(P);
@@ -247,8 +264,10 @@ function renderResult(){
    '<p>'+(won?(S.checks?S.checks+" check"+(S.checks>1?"s":"")+" used":"No checks used"):"Revealed puzzles do not count toward your streak.")+'</p>'+
    '<div class="stats"><div><b>'+st.streak+'</b><span>streak</span></div><div><b>'+st.max+'</b><span>best</span></div><div><b>'+st.wins+'</b><span>solved</span></div></div>'+
    (won?'<button class="btn primary" id="shareBtn">Share</button>':'')+
+   (!cloud&&FIREBASE_CONFIG&&!store.get("linkage-mini-nudged",false)?'<div class="nudge"><p>'+(won?"That streak only lives in this browser right now.":"Tomorrow is a fresh start.")+' Sign in and your streak follows you on every device.</p><button class="btn primary" id="nudgeIn">Sign in with Google</button><button class="skip" id="nudgeSkip">not now</button></div>':'')+
    '<a class="btn" href="/" style="text-decoration:none">Play Connections</a></div>';
   if($("shareBtn"))$("shareBtn").onclick=share;
+  if($("nudgeIn")){$("nudgeIn").onclick=()=>signIn();$("nudgeSkip").onclick=()=>{store.set("linkage-mini-nudged",true);renderResult()}}
 }
 function shareText(){
   const rows=[];for(let r=0;r<5;r++){let s="";for(let c=0;c<5;c++)s+=WHITE(r,c)?"🟩":"⬛";rows.push(s)}
@@ -349,6 +368,55 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)save()});
 window.addEventListener("pagehide",save);
 load(TODAY);
 if(!store.get("linkage-mini-seen",false)){store.set("linkage-mini-seen",true);openSheet("helpSheet")}
+// ================= Cloud: Google sign-in and sync, same account as Linkage =================
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function renderAcctBtn(){const b=$("acctBtn");b.hidden=false;b.textContent=cloud?(cloud.name()||"Me").split(" ")[0]:"Sign in"}
+function renderAcct(){
+  const p=$("acctPanel");
+  if(!cloud){
+    p.innerHTML='<h3>Save your streak</h3><p>Sign in with Google to keep your mini streak and times on every device. Your progress on this device comes with you. It is the same account as Linkage.</p><div class="controls" style="justify-content:flex-start"><button class="btn primary" id="gBtn">Sign in with Google</button><button class="btn" data-close>Not now</button></div>';
+    $("gBtn").onclick=()=>signIn();
+  }else{
+    p.innerHTML='<h3>'+esc(cloud.name()||"Your account")+'</h3><p style="margin-top:0;color:var(--muted)">'+esc(cloud.email()||"")+'</p><p>Your mini streak and times sync across devices.</p><div class="controls" style="justify-content:flex-start"><button class="btn" id="outBtn">Sign out</button><button class="btn primary" data-close>Close</button></div>';
+    $("outBtn").onclick=()=>cloud.signOut();
+  }
+}
+$("acctBtn").onclick=()=>{renderAcct();openSheet("acctSheet")};
+if(FIREBASE_CONFIG){
+  renderAcctBtn();
+  const V="10.12.2", base="https://www.gstatic.com/firebasejs/"+V+"/";
+  Promise.all([import(base+"firebase-app.js"),import(base+"firebase-auth.js"),import(base+"firebase-firestore.js")])
+  .then(([A,Au,F])=>{
+    const app=A.initializeApp(FIREBASE_CONFIG), auth=Au.getAuth(app), db=F.getFirestore(app);
+    const provider=new Au.GoogleAuthProvider();
+    signIn=async()=>{
+      try{await Au.signInWithPopup(auth,provider)}
+      catch(e){if(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-environment")Au.signInWithRedirect(auth,provider);else if(e.code!=="auth/popup-closed-by-user")toast("Sign-in failed. Try again")}
+    };
+    Au.onAuthStateChanged(auth,async user=>{
+      if(!user){cloud=null;renderAcctBtn();render();if($("acctSheet").classList.contains("on"))renderAcct();return}
+      const uRef=F.doc(db,"users",user.uid);
+      let remote={};
+      try{const snap=await F.getDoc(uRef);remote=(snap.exists()&&snap.data().mini)||{}}catch(e){}
+      // merge: keep whichever copy of each day is further along
+      const rank=d=>d?(d.status==="won"?2000:d.status==="revealed"?1000:0)+(d.g||[]).filter(Boolean).length:-1;
+      const merged={...remote};
+      for(const k in days)if(rank(days[k])>rank(remote[k]))merged[k]=days[k];
+      days=merged;store.set("linkage-mini-days",days);
+      try{await F.setDoc(uRef,{name:user.displayName||"",mini:days,updatedAt:F.serverTimestamp()},{merge:true})}catch(e){}
+      cloud={
+        name:()=>user.displayName,email:()=>user.email,
+        push:()=>{const ks=[...dirty];dirty.clear();if(!ks.length)return;const m={};ks.forEach(k=>{if(days[k])m[k]=days[k]});F.setDoc(uRef,{mini:m,updatedAt:F.serverTimestamp()},{merge:true}).catch(()=>toast("Couldn't sync. Saved on this device"))},
+        signOut:()=>{Au.signOut(auth);closeSheets()}
+      };
+      if(!store.get("linkage-signin-tracked",false)){store.set("linkage-signin-tracked",true);track("signed-in")}
+      if(days[key(num)])S=days[key(num)];
+      renderAcctBtn();render();
+      if($("acctSheet").classList.contains("on"))renderAcct();
+    });
+  }).catch(()=>{});
+}
+window.addEventListener("pagehide",()=>{if(cloud)cloud.push()});
 </script>
 <script data-goatcounter="https://playlinkage.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
